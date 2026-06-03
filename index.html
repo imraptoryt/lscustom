@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESCAPE — GUIDE OPÉRATEUR</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --g0: #000a00;
+    --g1: #001a00;
+    --g2: #003300;
+    --g3: #00ff41;
+    --g4: #00cc33;
+    --g5: #009922;
+    --g6: #006611;
+    --dim: #00441100;
+    --warn: #ffaa00;
+    --red: #ff3333;
+    --glow: 0 0 8px #00ff4188, 0 0 20px #00ff4133;
+    --glow-sm: 0 0 4px #00ff4166;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--g0);
+    color: var(--g3);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.015) 2px, rgba(0,255,65,0.015) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.8) 100%);
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  .scanline {
+    position: fixed;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(0,255,65,0.06);
+    animation: scan 8s linear infinite;
+    pointer-events: none;
+    z-index: 10000;
+  }
+
+  @keyframes scan { to { top: 110%; } }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 3rem 2rem 2rem;
+    position: relative;
+    border-bottom: 1px solid var(--g6);
+  }
+
+  .skull-wrap {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 12px #00ff41aa);
+    animation: flicker 6s infinite;
+  }
+
+  @keyframes flicker {
+    0%,95%,100% { opacity:1; filter: drop-shadow(0 0 12px #00ff41aa); }
+    96% { opacity:0.5; filter: drop-shadow(0 0 4px #00ff4155); }
+    97% { opacity:1; filter: drop-shadow(0 0 20px #00ff41cc); }
+    98% { opacity:0.7; }
+  }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.4rem, 4vw, 2.6rem);
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-shadow: var(--glow);
+    margin-bottom: 0.4rem;
+  }
+
+  .subtitle {
+    font-family: 'VT323', monospace;
+    font-size: 1.3rem;
+    color: var(--g5);
+    letter-spacing: 0.3em;
+    animation: blink-sub 3s infinite;
+  }
+
+  @keyframes blink-sub {
+    0%,49%,51%,100% { opacity:1; }
+    50% { opacity:0.3; }
+  }
+
+  .header-line {
+    font-size: 0.7rem;
+    color: var(--g6);
+    letter-spacing: 0.15em;
+    margin-top: 1rem;
+  }
+
+  /* SELECTOR */
+  .selector-wrap {
+    max-width: 960px;
+    margin: 2rem auto 0;
+    padding: 0 1.5rem;
+  }
+
+  .selector-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--g5);
+    margin-bottom: 0.8rem;
+  }
+
+  .selector-label::before { content: '> '; color: var(--g3); }
+
+  .steps-nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    margin-bottom: 2.5rem;
+  }
+
+  .step-btn {
+    background: var(--g1);
+    border: 1px solid var(--g6);
+    color: var(--g5);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    padding: 10px 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .step-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--g6);
+    transition: all 0.15s;
+  }
+
+  .step-btn:hover, .step-btn.active {
+    background: var(--g2);
+    border-color: var(--g4);
+    color: var(--g3);
+    text-shadow: var(--glow-sm);
+  }
+
+  .step-btn:hover::before, .step-btn.active::before {
+    background: var(--g3);
+    box-shadow: var(--glow);
+  }
+
+  .step-btn.active {
+    border-color: var(--g3);
+    box-shadow: inset 0 0 12px rgba(0,255,65,0.08);
+  }
+
+  .step-num {
+    display: block;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    color: var(--g6);
+    margin-bottom: 4px;
+  }
+
+  .step-btn.active .step-num, .step-btn:hover .step-num { color: var(--g5); }
+
+  /* CONTENT PANEL */
+  .content-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+
+  .step-panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .step-panel.visible { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity:0; transform: translateY(8px); }
+    to { opacity:1; transform: translateY(0); }
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--g5);
+    background: linear-gradient(135deg, var(--g1) 0%, transparent 100%);
+    position: relative;
+  }
+
+  .panel-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--g3);
+    opacity: 0;
+    animation: border-flash 4s infinite;
+  }
+
+  @keyframes border-flash {
+    0%,90%,100% { opacity:0; }
+    95% { opacity:0.3; }
+  }
+
+  .panel-icon {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--g3);
+    text-shadow: var(--glow);
+    line-height: 1;
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .panel-meta { flex: 1; }
+
+  .panel-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--g5);
+    margin-bottom: 0.4rem;
+  }
+
+  .panel-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 700;
+    color: var(--g3);
+    text-shadow: var(--glow-sm);
+    margin-bottom: 0.5rem;
+  }
+
+  .panel-desc {
+    font-size: 0.8rem;
+    color: var(--g5);
+    line-height: 1.6;
+  }
+
+  .status-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    padding: 3px 10px;
+    border: 1px solid;
+    margin-top: 0.6rem;
+  }
+
+  .status-tag.required { border-color: var(--warn); color: var(--warn); }
+  .status-tag.parallel { border-color: #00aaff; color: #00aaff; }
+  .status-tag.final { border-color: var(--red); color: var(--red); }
+  .status-tag.unlock { border-color: var(--g3); color: var(--g3); }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--g6);
+    background: var(--g1);
+  }
+
+  .section-head {
+    padding: 0.7rem 1rem;
+    background: rgba(0,255,65,0.05);
+    border-bottom: 1px solid var(--g6);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--g4);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-head::before { content: '//'; color: var(--g6); }
+
+  .section-body {
+    padding: 1rem 1.2rem;
+  }
+
+  /* STEPS LIST */
+  .steps-list { list-style: none; }
+
+  .steps-list li {
+    display: flex;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(0,255,65,0.06);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--g4);
+    align-items: flex-start;
+  }
+
+  .steps-list li:last-child { border-bottom: none; }
+
+  .li-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    color: var(--g6);
+    min-width: 24px;
+    padding-top: 3px;
+  }
+
+  /* ALERT BOX */
+  .alert {
+    padding: 0.8rem 1rem;
+    border-left: 3px solid;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .alert.warn { border-color: var(--warn); color: var(--warn); background: rgba(255,170,0,0.05); }
+  .alert.info { border-color: #00aaff; color: #00aaff; background: rgba(0,170,255,0.05); }
+  .alert.danger { border-color: var(--red); color: var(--red); background: rgba(255,51,51,0.05); }
+  .alert.success { border-color: var(--g3); color: var(--g3); background: rgba(0,255,65,0.05); }
+
+  .alert strong { font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 0.15em; display: block; margin-bottom: 4px; }
+
+  /* CODE BOX */
+  .code-box {
+    background: #000500;
+    border: 1px solid var(--g6);
+    padding: 0.8rem 1rem;
+    font-size: 0.78rem;
+    color: var(--g3);
+    margin: 0.8rem 0;
+    position: relative;
+  }
+
+  .code-box::before {
+    content: 'NOTE';
+    position: absolute;
+    top: -1px; right: 12px;
+    background: #000500;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--g6);
+    padding: 0 6px;
+  }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--g6);
+  }
+
+  .tl-item {
+    position: relative;
+    margin-bottom: 1.2rem;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -1.15rem;
+    top: 5px;
+    width: 8px; height: 8px;
+    border: 1px solid var(--g4);
+    background: var(--g0);
+    transform: rotate(45deg);
+  }
+
+  .tl-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.62rem;
+    color: var(--g5);
+    letter-spacing: 0.12em;
+    margin-bottom: 3px;
+  }
+
+  .tl-text {
+    font-size: 0.8rem;
+    color: var(--g4);
+    line-height: 1.5;
+  }
+
+  /* PARALLEL BADGE */
+  .parallel-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px dashed #00aaff44;
+    color: #00aaff;
+    font-size: 0.72rem;
+    margin-bottom: 1.2rem;
+    background: rgba(0,170,255,0.04);
+  }
+
+  .parallel-note svg { flex-shrink: 0; }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .progress-label {
+    font-size: 0.65rem;
+    color: var(--g5);
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-track {
+    height: 4px;
+    background: var(--g2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--g3);
+    box-shadow: var(--glow);
+    transition: width 0.5s ease;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--g6);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--g6);
+  }
+
+  /* CURSOR BLINK */
+  .cursor::after {
+    content: '█';
+    animation: cur 1s step-end infinite;
+  }
+  @keyframes cur { 50% { opacity:0; } }
+
+  /* GRID 2col */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .steps-nav { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; }
+  .checklist li {
+    padding: 5px 0;
+    font-size: 0.8rem;
+    color: var(--g4);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    border-bottom: 1px solid rgba(0,255,65,0.05);
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before {
+    content: '[ ]';
+    color: var(--g6);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  /* HIGHLIGHT */
+  .hl { color: var(--g3); text-shadow: var(--glow-sm); font-weight: bold; }
+  .hl-warn { color: var(--warn); }
+  .hl-red { color: var(--red); }
+  .hl-blue { color: #00aaff; }
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+
+<header>
+  <!-- SKULL SVG -->
+  <div class="skull-wrap">
+    <svg width="110" height="120" viewBox="0 0 110 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="sg" cx="50%" cy="40%" r="55%">
+          <stop offset="0%" stop-color="#00ff41" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="#000a00" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="gf">
+          <feGaussianBlur stdDeviation="1.5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- Skull cranium -->
+      <ellipse cx="55" cy="45" rx="38" ry="38" fill="none" stroke="#00ff41" stroke-width="1.5" filter="url(#gf)"/>
+      <ellipse cx="55" cy="45" rx="38" ry="38" fill="url(#sg)"/>
+
+      <!-- Cranium top detail lines -->
+      <path d="M 30 25 Q 55 15 80 25" fill="none" stroke="#00aa2288" stroke-width="0.8"/>
+      <path d="M 20 42 Q 55 35 90 42" fill="none" stroke="#00aa2244" stroke-width="0.8"/>
+
+      <!-- Jaw base -->
+      <path d="M 25 72 L 25 95 Q 25 105 35 108 L 55 110 L 75 108 Q 85 105 85 95 L 85 72" fill="none" stroke="#00ff41" stroke-width="1.5" filter="url(#gf)"/>
+      <path d="M 25 72 L 85 72" fill="none" stroke="#00ff41" stroke-width="1.5"/>
+
+      <!-- Jaw fill -->
+      <path d="M 25 72 L 25 95 Q 25 105 35 108 L 55 110 L 75 108 Q 85 105 85 95 L 85 72 Z" fill="url(#sg)"/>
+
+      <!-- Teeth -->
+      <rect x="31" y="72" width="9" height="14" rx="1" fill="none" stroke="#00ff41" stroke-width="1.2"/>
+      <rect x="43" y="72" width="9" height="16" rx="1" fill="none" stroke="#00ff41" stroke-width="1.2"/>
+      <rect x="55" y="72" width="9" height="16" rx="1" fill="none" stroke="#00ff41" stroke-width="1.2"/>
+      <rect x="67" y="72" width="9" height="14" rx="1" fill="none" stroke="#00ff41" stroke-width="1.2"/>
+
+      <!-- Teeth fill glow -->
+      <rect x="31" y="72" width="9" height="14" rx="1" fill="#00ff4108"/>
+      <rect x="43" y="72" width="9" height="16" rx="1" fill="#00ff4108"/>
+      <rect x="55" y="72" width="9" height="16" rx="1" fill="#00ff4108"/>
+      <rect x="67" y="72" width="9" height="14" rx="1" fill="#00ff4108"/>
+
+      <!-- Eye sockets -->
+      <ellipse cx="38" cy="48" rx="13" ry="14" fill="#000a00" stroke="#00ff41" stroke-width="1.5"/>
+      <ellipse cx="72" cy="48" rx="13" ry="14" fill="#000a00" stroke="#00ff41" stroke-width="1.5"/>
+
+      <!-- Eye inner glow -->
+      <ellipse cx="38" cy="48" rx="8" ry="9" fill="#001800" stroke="#00cc33" stroke-width="0.8"/>
+      <ellipse cx="72" cy="48" rx="8" ry="9" fill="#001800" stroke="#00cc33" stroke-width="0.8"/>
+
+      <!-- Eye pupils (circuit pattern) -->
+      <circle cx="38" cy="48" r="3" fill="#00ff41" opacity="0.6"/>
+      <circle cx="72" cy="48" r="3" fill="#00ff41" opacity="0.6"/>
+      <line x1="34" y1="44" x2="42" y2="52" stroke="#00ff41" stroke-width="0.5" opacity="0.5"/>
+      <line x1="42" y1="44" x2="34" y2="52" stroke="#00ff41" stroke-width="0.5" opacity="0.5"/>
+      <line x1="68" y1="44" x2="76" y2="52" stroke="#00ff41" stroke-width="0.5" opacity="0.5"/>
+      <line x1="76" y1="44" x2="68" y2="52" stroke="#00ff41" stroke-width="0.5" opacity="0.5"/>
+
+      <!-- Nose cavity -->
+      <path d="M 49 60 L 55 55 L 61 60 L 59 66 L 51 66 Z" fill="#000a00" stroke="#009922" stroke-width="1"/>
+
+      <!-- Cheekbone details -->
+      <path d="M 22 55 Q 18 65 25 72" fill="none" stroke="#006611" stroke-width="0.8"/>
+      <path d="M 88 55 Q 92 65 85 72" fill="none" stroke="#006611" stroke-width="0.8"/>
+
+      <!-- Circuit traces on skull -->
+      <path d="M 55 8 L 55 15" stroke="#00ff4133" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M 15 42 L 23 42" stroke="#00ff4133" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M 95 42 L 87 42" stroke="#00ff4133" stroke-width="1" stroke-dasharray="2,2"/>
+
+      <circle cx="55" cy="7" r="2" fill="none" stroke="#00ff4155" stroke-width="1"/>
+      <circle cx="14" cy="42" r="2" fill="none" stroke="#00ff4155" stroke-width="1"/>
+      <circle cx="96" cy="42" r="2" fill="none" stroke="#00ff4155" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <h1>ESCAPE SYSTEM</h1>
+  <div class="subtitle">// GUIDE OPÉRATEUR v1.0 //</div>
+  <div class="header-line">ACCÈS RESTREINT — USAGE INTERNE UNIQUEMENT — CLASSIFIED</div>
+</header>
+
+<div class="selector-wrap">
+  <div class="selector-label">SÉLECTIONNER UNE PHASE D'OPÉRATION</div>
+
+  <div class="steps-nav" id="navGrid">
+    <button class="step-btn active" onclick="showPanel(0, this)">
+      <span class="step-num">PHASE 01</span>
+      ACCÈS BOUTIQUE
+    </button>
+    <button class="step-btn" onclick="showPanel(1, this)">
+      <span class="step-num">PHASE 02</span>
+      COFFRE-FORT
+    </button>
+    <button class="step-btn" onclick="showPanel(2, this)">
+      <span class="step-num">PHASE 03</span>
+      RÉCUPÉRER LA SCIE
+    </button>
+    <button class="step-btn" onclick="showPanel(3, this)">
+      <span class="step-num">PHASE 04</span>
+      PC + ÉNIGMES VIN
+    </button>
+    <button class="step-btn" onclick="showPanel(4, this)">
+      <span class="step-num">PHASE 05</span>
+      DÉCODEUR COULEURS
+    </button>
+    <button class="step-btn" onclick="showPanel(5, this)">
+      <span class="step-num">PHASE 06</span>
+      ZONE CACHÉE LS
+    </button>
+    <button class="step-btn" onclick="showPanel(6, this)">
+      <span class="step-num">PHASE 07</span>
+      ACCÈS FINAL
+    </button>
+    <button class="step-btn" onclick="showPanel(7, this)">
+      <span class="step-num">PHASE 08</span>
+      CLÉ + BUREAU
+    </button>
+    <button class="step-btn" onclick="showPanel(8, this)">
+      <span class="step-num">PHASE 09</span>
+      CODE DU BUREAU
+    </button>
+    <button class="step-btn" onclick="showPanel(9, this)">
+      <span class="step-num">PHASE 10</span>
+      EFFACER LES VIN
+    </button>
+    <button class="step-btn" onclick="showPanel(10, this)">
+      <span class="step-num">PHASE 11</span>
+      EXTRACTION FINALE
+    </button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>PROGRESSION OPÉRATION</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="content-wrap">
+
+  <!-- PANEL 0: ACCÈS BOUTIQUE -->
+  <div class="step-panel visible" id="panel-0">
+    <div class="panel-header">
+      <div class="panel-icon">01</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// POINT D'ENTRÉE — OBJECTIF PRIMAIRE</div>
+        <div class="panel-title">ACCÈS À LA BOUTIQUE</div>
+        <div class="panel-desc">Reconstituer les paniers d'achat des 4 clients sur la borne d'entrée pour déverrouiller l'accès.</div>
+        <span class="status-tag required">⚡ REQUIS — POINT DE DÉPART</span>
+      </div>
+    </div>
+
+    <div class="alert warn">
+      <strong>⚠ ATTENTION CRITIQUE</strong>
+      Ne pas oublier d'inclure les <span class="hl">partenaires</span> dans la reconstitution des paniers. Erreur fréquente des équipes.
+    </div>
+
+    <div class="section">
+      <div class="section-head">PROCÉDURE D'ACCÈS</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">01.</span><span>Localiser la <span class="hl">borne d'entrée</span> à l'extérieur de la boutique.</span></li>
+          <li><span class="li-num">02.</span><span>Identifier les <span class="hl">4 clients</span> — chacun a effectué des achats différents. Récupérer les informations sur ce qu'ils ont acheté.</span></li>
+          <li><span class="li-num">03.</span><span>Reproduire <span class="hl">exactement</span> le contenu de chaque panier sur la borne. L'ordre et les quantités sont importants.</span></li>
+          <li><span class="li-num">04.</span><span>Vérifier que les <span class="hl">partenaires</span> associés aux clients sont bien inclus dans la sélection — c'est l'élément le plus souvent oublié.</span></li>
+          <li><span class="li-num">05.</span><span>Valider sur la borne une fois les 4 paniers correctement reconstitués. La porte se déverrouille.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">INDICES SI BLOQUÉ</div>
+      <div class="section-body">
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-label">INDICE 1</div>
+            <div class="tl-text">Chercher dans la zone autour de la borne des documents, affiches ou notes indiquant les achats des clients.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">INDICE 2</div>
+            <div class="tl-text">Les partenaires sont souvent indiqués en bas ou en marge des fiches clients — ne pas se concentrer uniquement sur les articles principaux.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">INDICE 3</div>
+            <div class="tl-text">Si la borne ne valide pas, vérifier si un partenaire a été omis ou si une quantité est incorrecte.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert success">
+      <strong>✓ VALIDATION</strong>
+      Borne acceptée → Porte boutique déverrouillée → Passer à la Phase 02.
+    </div>
+  </div>
+
+  <!-- PANEL 1: COFFRE FORT -->
+  <div class="step-panel" id="panel-1">
+    <div class="panel-header">
+      <div class="panel-icon">02</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// INTÉRIEUR BOUTIQUE — OBJECTIF SECONDAIRE</div>
+        <div class="panel-title">OUVERTURE DU COFFRE-FORT</div>
+        <div class="panel-desc">Ranger le contenu du coffre pour trouver la note cachée au fond contenant le mot de passe du PC de Zoé.</div>
+        <span class="status-tag required">⚡ REQUIS</span>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <strong>ℹ NOTE OPÉRATION</strong>
+      Le coffre-fort est situé à l'intérieur de la boutique. Il est déjà ouvert ou accessible — l'enjeu n'est pas de le cracker mais de <span class="hl-blue">vider et ranger son contenu</span> méthodiquement.
+    </div>
+
+    <div class="section">
+      <div class="section-head">PROCÉDURE</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">01.</span><span>Localiser le <span class="hl">coffre-fort</span> dans la boutique.</span></li>
+          <li><span class="li-num">02.</span><span>Sortir <span class="hl">tout le contenu</span> du coffre et le ranger de manière organisée à l'extérieur.</span></li>
+          <li><span class="li-num">03.</span><span>Une fois le coffre entièrement vidé, inspecter le <span class="hl">fond</span> du coffre.</span></li>
+          <li><span class="li-num">04.</span><span>Récupérer la <span class="hl-warn">petite note</span> cachée au fond — elle contient le MDP du PC de Zoé.</span></li>
+          <li><span class="li-num">05.</span><span>Mémoriser ou noter le mot de passe — il sera utilisé plus tard en Phase 04.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-box">
+      // La note peut être collée, glissée sous un fond amovible, ou placée dans un compartiment secret au fond du coffre. Inspecter minutieusement chaque surface intérieure.
+    </div>
+
+    <div class="alert success">
+      <strong>✓ VALIDATION</strong>
+      Note récupérée → MDP de Zoé obtenu → Nécessaire pour Phase 04.
+    </div>
+  </div>
+
+  <!-- PANEL 2: SCIE -->
+  <div class="step-panel" id="panel-2">
+    <div class="panel-header">
+      <div class="panel-icon">03</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// LS CUSTOM — RÉCUPÉRATION D'OUTIL</div>
+        <div class="panel-title">RÉCUPÉRER LA SCIE ÉLECTRIQUE</div>
+        <div class="panel-desc">Se rendre dans le garage LS Custom et localiser la scie électrique — indispensable pour la Phase 07.</div>
+        <span class="status-tag parallel">⟳ EN PARALLÈLE avec Phase 04 et 05</span>
+      </div>
+    </div>
+
+    <div class="parallel-note">
+      <svg width="16" height="16" viewBox="0 0 16 16"><path d="M 4 2 L 4 14 M 8 2 L 8 14 M 12 2 L 12 14" stroke="#00aaff" stroke-width="1.5" fill="none"/></svg>
+      Cette phase peut être effectuée simultanément avec les Phases 04 et 05 si l'équipe se sépare.
+    </div>
+
+    <div class="section">
+      <div class="section-head">LOCALISATION DE L'OUTIL</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">01.</span><span>Entrer dans le <span class="hl">garage LS Custom</span>.</span></li>
+          <li><span class="li-num">02.</span><span>Se diriger vers le <span class="hl">fond du garage</span>, côté <span class="hl-warn">droite</span>.</span></li>
+          <li><span class="li-num">03.</span><span>Localiser la <span class="hl">table de travail</span> au fond à droite.</span></li>
+          <li><span class="li-num">04.</span><span>Récupérer la <span class="hl-warn">scie électrique</span> posée sur cette table.</span></li>
+          <li><span class="li-num">05.</span><span>Conserver la scie — elle sera utilisée pour casser la porte en Phase 07.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="alert warn">
+        <strong>📍 POSITION</strong>
+        Fond du garage — Côté DROIT — Sur une table
+      </div>
+      <div class="alert success">
+        <strong>✓ UTILISATION</strong>
+        Phase 07 — Casser la porte de la zone finale
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: PC + VIN -->
+  <div class="step-panel" id="panel-3">
+    <div class="panel-header">
+      <div class="panel-icon">04</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// LS CUSTOM — ACCÈS SYSTÈME</div>
+        <div class="panel-title">PC DE ZOÉ + NUMÉROS VIN</div>
+        <div class="panel-desc">Utiliser le MDP récupéré en Phase 02 pour accéder au PC de Zoé, résoudre les énigmes et obtenir l'accès aux 4 voitures pour relever leurs VIN.</div>
+        <span class="status-tag parallel">⟳ EN PARALLÈLE avec Phase 03 et 05</span>
+      </div>
+    </div>
+
+    <div class="parallel-note">
+      <svg width="16" height="16" viewBox="0 0 16 16"><path d="M 4 2 L 4 14 M 8 2 L 8 14 M 12 2 L 12 14" stroke="#00aaff" stroke-width="1.5" fill="none"/></svg>
+      Cette phase nécessite le MDP trouvé en Phase 02 (note dans le coffre de Zoé).
+    </div>
+
+    <div class="section">
+      <div class="section-head">ACCÈS AU PC</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">01.</span><span>Localiser le <span class="hl">PC de Zoé</span> dans LS Custom.</span></li>
+          <li><span class="li-num">02.</span><span>Entrer le <span class="hl">mot de passe</span> trouvé dans le coffre-fort (Phase 02).</span></li>
+          <li><span class="li-num">03.</span><span>Résoudre les <span class="hl-warn">énigmes</span> présentes sur le PC pour débloquer l'accès aux données véhicules.</span></li>
+          <li><span class="li-num">04.</span><span>Une fois les énigmes résolues, le système révèle les informations sur les <span class="hl">4 voitures</span> ciblées.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">RELEVÉ DES NUMÉROS VIN</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">05.</span><span>Localiser les <span class="hl">4 voitures</span> dans le garage LS Custom selon les données du PC.</span></li>
+          <li><span class="li-num">06.</span><span>Sur chaque voiture, trouver et noter le <span class="hl-warn">numéro VIN</span> — généralement visible sur le tableau de bord côté conducteur ou sur le montant de porte.</span></li>
+          <li><span class="li-num">07.</span><span>Relever les <span class="hl">4 VIN complets</span>. Ces numéros seront effacés en Phase 10 pour finaliser l'opération.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert danger">
+      <strong>⚠ CRITIQUE</strong>
+      Ne pas effacer les VIN maintenant — cela sera fait en Phase 10 dans la zone finale, en parallèle avec l'ouverture de porte.
+    </div>
+  </div>
+
+  <!-- PANEL 4: DÉCODEUR -->
+  <div class="step-panel" id="panel-4">
+    <div class="panel-header">
+      <div class="panel-icon">05</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// LS CUSTOM — DÉCHIFFREMENT</div>
+        <div class="panel-title">DÉCODEUR DE COULEURS</div>
+        <div class="panel-desc">Trouver le décodeur de couleurs caché derrière des conteneurs. Il fournit 9 couleurs avec leurs numéros correspondants — clé pour ouvrir l'arrière boutique.</div>
+        <span class="status-tag parallel">⟳ EN PARALLÈLE avec Phase 03 et 04</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">LOCALISATION DU DÉCODEUR</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">01.</span><span>Explorer la zone LS Custom et localiser des <span class="hl">conteneurs/containers</span>.</span></li>
+          <li><span class="li-num">02.</span><span>Chercher <span class="hl">derrière</span> ces conteneurs — le décodeur est caché là, pas visible de face.</span></li>
+          <li><span class="li-num">03.</span><span>Récupérer le <span class="hl-warn">décodeur de couleurs</span> — il liste 9 couleurs, chacune associée à un numéro.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">UTILISATION DU DÉCODEUR</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">04.</span><span>Revenir vers les <span class="hl">4 voitures</span> identifiées en Phase 04.</span></li>
+          <li><span class="li-num">05.</span><span>Observer la <span class="hl">couleur de chaque voiture</span> et trouver le numéro correspondant dans le décodeur.</span></li>
+          <li><span class="li-num">06.</span><span>Composer le code à partir des numéros de couleurs des 4 voitures — ce code ouvre <span class="hl-warn">l'arrière boutique cachée</span> du LS Custom.</span></li>
+          <li><span class="li-num">07.</span><span>Entrer le code sur la serrure ou le panneau de l'<span class="hl">arrière boutique cachée</span>.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <strong>ℹ MÉMO</strong>
+      Le décodeur = 9 couleurs → 9 numéros. Chaque voiture a une couleur → un chiffre. Le code final est formé par les chiffres des 4 voitures dans l'ordre.
+    </div>
+  </div>
+
+  <!-- PANEL 5: ZONE CACHÉE -->
+  <div class="step-panel" id="panel-5">
+    <div class="panel-header">
+      <div class="panel-icon">06</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// ARRIÈRE BOUTIQUE LS CUSTOM</div>
+        <div class="panel-title">ZONE CACHÉE — LECTURE DU MUR</div>
+        <div class="panel-desc">Dans l'arrière boutique cachée du LS, déchiffrer le code mural pour accéder à la phase finale.</div>
+        <span class="status-tag unlock">↗ DÉBLOQUÉ par Phase 05</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">PROCÉDURE DANS LA ZONE CACHÉE</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">01.</span><span>Entrer dans la <span class="hl">zone cachée</span> du LS Custom (débloquée avec le code couleurs de la Phase 05).</span></li>
+          <li><span class="li-num">02.</span><span>Examiner le <span class="hl">mur</span> dans cette zone — il y a deux faces à observer.</span></li>
+          <li><span class="li-num">03.</span><span>Sur un côté du mur : <span class="hl-warn">l'ordre des éléments</span>.</span></li>
+          <li><span class="li-num">04.</span><span>Directement <span class="hl">en face</span> (mur opposé ou autre côté) : le <span class="hl-warn">nombre correspondant</span> à chaque élément dans l'ordre.</span></li>
+          <li><span class="li-num">05.</span><span>Combiner les deux informations pour composer le <span class="hl">code final</span> qui donnera accès à la phase finale (Phase 07).</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="section">
+        <div class="section-head">MUR GAUCHE</div>
+        <div class="section-body">
+          <div style="color: var(--g5); font-size: 0.78rem; line-height: 1.8;">
+            → L'ordre des éléments<br>
+            → Séquence à suivre<br>
+            → Lire de haut en bas
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-head">MUR FACE</div>
+        <div class="section-body">
+          <div style="color: var(--g5); font-size: 0.78rem; line-height: 1.8;">
+            → Le nombre correspondant<br>
+            → Associer à l'ordre du 1er mur<br>
+            → Former le code
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert success">
+      <strong>✓ VALIDATION</strong>
+      Code mural déchiffré → Utiliser ce code pour entrer dans la Phase 07 (zone finale).
+    </div>
+  </div>
+
+  <!-- PANEL 6: ACCÈS FINAL -->
+  <div class="step-panel" id="panel-6">
+    <div class="panel-header">
+      <div class="panel-icon">07</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// ZONE FINALE — POINT D'ENTRÉE</div>
+        <div class="panel-title">ACCÈS À LA ZONE FINALE</div>
+        <div class="panel-desc">Utiliser le code du mur et la scie électrique pour pénétrer dans la zone finale.</div>
+        <span class="status-tag final">⚠ ZONE FINALE</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">ENTRÉE DANS LA ZONE FINALE</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">01.</span><span>Utiliser le <span class="hl">code du mur</span> obtenu en Phase 06 pour atteindre l'accès à la zone finale.</span></li>
+          <li><span class="li-num">02.</span><span>Une fois devant la porte de la zone finale, utiliser la <span class="hl-warn">scie électrique</span> récupérée en Phase 03 pour <span class="hl">casser la porte</span>.</span></li>
+          <li><span class="li-num">03.</span><span>Entrer dans la zone finale.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="alert warn">
+        <strong>🔧 REQUIS</strong>
+        Scie électrique (Phase 03) indispensable.
+      </div>
+      <div class="alert warn">
+        <strong>🔑 REQUIS</strong>
+        Code mural (Phase 06) pour localiser l'accès.
+      </div>
+    </div>
+
+    <div class="alert success">
+      <strong>✓ VALIDATION</strong>
+      Porte cassée → Zone finale accessible → Commencer Phases 08 et 10 en parallèle.
+    </div>
+  </div>
+
+  <!-- PANEL 7: CLÉ + BUREAU -->
+  <div class="step-panel" id="panel-7">
+    <div class="panel-header">
+      <div class="panel-icon">08</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// ZONE FINALE — FOUILLE</div>
+        <div class="panel-title">TROUVER LA CLÉ ET LE BUREAU</div>
+        <div class="panel-desc">Fouiller les établis de la zone finale pour trouver la clé perdue permettant d'accéder au bureau.</div>
+        <span class="status-tag parallel">⟳ EN PARALLÈLE avec Phase 10</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">RECHERCHE DE LA CLÉ</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">01.</span><span>Entrer dans la zone finale (après Phase 07).</span></li>
+          <li><span class="li-num">02.</span><span>Localiser les <span class="hl">établis</span> présents dans cette zone.</span></li>
+          <li><span class="li-num">03.</span><span>Fouiller <span class="hl">chaque établi</span> méthodiquement — la clé est cachée dans l'un d'eux. Inspecter dessus, dessous, dans les tiroirs et compartiments.</span></li>
+          <li><span class="li-num">04.</span><span>Récupérer la <span class="hl-warn">clé perdue</span>.</span></li>
+          <li><span class="li-num">05.</span><span>Utiliser la clé pour <span class="hl">ouvrir le bureau</span> dans cette zone.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <strong>ℹ STRATÉGIE</strong>
+      Diviser l'équipe — une partie cherche la clé dans les établis, l'autre part effacer les VIN (Phase 10) pour optimiser le temps.
+    </div>
+
+    <div class="alert success">
+      <strong>✓ VALIDATION</strong>
+      Clé trouvée → Bureau ouvert → Accéder au bout de papier en Phase 09.
+    </div>
+  </div>
+
+  <!-- PANEL 8: CODE BUREAU -->
+  <div class="step-panel" id="panel-8">
+    <div class="panel-header">
+      <div class="panel-icon">09</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// BUREAU — DÉCHIFFREMENT FINAL</div>
+        <div class="panel-title">CODE DU BUREAU — 10 CODES À 4 CHIFFRES</div>
+        <div class="panel-desc">Dans le bureau se trouve un bout de papier avec 10 codes à 4 chiffres. Un seul est le bon — il ouvre la porte vers l'étage en dessus.</div>
+        <span class="status-tag unlock">↗ DÉBLOQUÉ par Phase 08</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">PROCÉDURE</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">01.</span><span>Entrer dans le <span class="hl">bureau</span> avec la clé obtenue en Phase 08.</span></li>
+          <li><span class="li-num">02.</span><span>Localiser le <span class="hl-warn">bout de papier</span> dans le bureau.</span></li>
+          <li><span class="li-num">03.</span><span>Observer les <span class="hl">10 codes à 4 chiffres</span> inscrits dessus.</span></li>
+          <li><span class="li-num">04.</span><span>Chercher dans le bureau ou la zone des <span class="hl">indices</span> permettant d'identifier le bon code parmi les 10.</span></li>
+          <li><span class="li-num">05.</span><span>Entrer le code correct sur la <span class="hl">serrure de la porte</span> menant à l'étage en dessous.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-box">
+      // 10 codes → 1 seul valide. Chercher des indices dans le bureau qui pointent vers le bon code : marques, surlignage, symboles, cohérence avec d'autres éléments trouvés dans l'escape.
+    </div>
+
+    <div class="alert warn">
+      <strong>⚠ MÉTHODE</strong>
+      Ne pas tester tous les codes au hasard. Chercher d'abord un indice qui identifie lequel des 10 est le correct. Un élément du bureau ou de la zone devrait indiquer le bon.
+    </div>
+
+    <div class="alert success">
+      <strong>✓ VALIDATION</strong>
+      Bon code trouvé → Porte vers l'étage en dessous ouverte.
+    </div>
+  </div>
+
+  <!-- PANEL 9: EFFACER VIN -->
+  <div class="step-panel" id="panel-9">
+    <div class="panel-header">
+      <div class="panel-icon">10</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// ZONE FINALE — MISSION PRINCIPALE</div>
+        <div class="panel-title">EFFACER LES 4 NUMÉROS VIN</div>
+        <div class="panel-desc">Localiser les 4 voitures dans la zone finale et effacer leurs numéros VIN — condition sine qua non pour accéder à l'extraction.</div>
+        <span class="status-tag parallel">⟳ EN PARALLÈLE avec Phase 08 et 09</span>
+      </div>
+    </div>
+
+    <div class="parallel-note">
+      <svg width="16" height="16" viewBox="0 0 16 16"><path d="M 4 2 L 4 14 M 8 2 L 8 14 M 12 2 L 12 14" stroke="#00aaff" stroke-width="1.5" fill="none"/></svg>
+      Peut être réalisé en simultané avec la recherche de la clé (Phase 08) et la résolution du code (Phase 09).
+    </div>
+
+    <div class="section">
+      <div class="section-head">PROCÉDURE D'EFFACEMENT</div>
+      <div class="section-body">
+        <ul class="steps-list">
+          <li><span class="li-num">01.</span><span>Localiser les <span class="hl">4 voitures</span> dans la zone finale.</span></li>
+          <li><span class="li-num">02.</span><span>Sur chaque voiture, localiser le <span class="hl-warn">numéro VIN</span> (tableau de bord, montant de porte A, ou châssis).</span></li>
+          <li><span class="li-num">03.</span><span>Effacer / supprimer / retirer le VIN sur la <span class="hl">voiture 1</span>.</span></li>
+          <li><span class="li-num">04.</span><span>Effacer le VIN sur la <span class="hl">voiture 2</span>.</span></li>
+          <li><span class="li-num">05.</span><span>Effacer le VIN sur la <span class="hl">voiture 3</span>.</span></li>
+          <li><span class="li-num">06.</span><span>Effacer le VIN sur la <span class="hl">voiture 4</span>.</span></li>
+          <li><span class="li-num">07.</span><span>Vérifier que les <span class="hl">4 VIN sont bien effacés</span> — un seul oublié et l'accès à l'ascenseur reste bloqué.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">CHECKLIST VIN</div>
+      <div class="section-body">
+        <ul class="checklist">
+          <li>VIN Voiture 1 — effacé</li>
+          <li>VIN Voiture 2 — effacé</li>
+          <li>VIN Voiture 3 — effacé</li>
+          <li>VIN Voiture 4 — effacé</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert success">
+      <strong>✓ VALIDATION</strong>
+      4 VIN effacés + Code bureau validé (Phase 09) → Prendre l'ascenseur → Phase 11.
+    </div>
+  </div>
+
+  <!-- PANEL 10: EXTRACTION -->
+  <div class="step-panel" id="panel-10">
+    <div class="panel-header">
+      <div class="panel-icon">11</div>
+      <div class="panel-meta">
+        <div class="panel-tag">// FIN DE L'OPÉRATION</div>
+        <div class="panel-title">EXTRACTION FINALE</div>
+        <div class="panel-desc">Conditions remplies — prendre l'ascenseur et terminer l'opération.</div>
+        <span class="status-tag final">★ OBJECTIF FINAL</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">CONDITIONS REQUISES AVANT EXTRACTION</div>
+      <div class="section-body">
+        <ul class="checklist">
+          <li>Phase 01 — Accès boutique via borne clients ✓</li>
+          <li>Phase 02 — MDP de Zoé récupéré dans le coffre ✓</li>
+          <li>Phase 03 — Scie électrique récupérée au LS Custom ✓</li>
+          <li>Phase 04 — PC Zoé accédé + 4 VIN relevés ✓</li>
+          <li>Phase 05 — Décodeur couleurs trouvé + arrière boutique ouverte ✓</li>
+          <li>Phase 06 — Code mural déchiffré dans la zone cachée ✓</li>
+          <li>Phase 07 — Porte zone finale cassée avec la scie ✓</li>
+          <li>Phase 08 — Clé trouvée dans les établis + bureau ouvert ✓</li>
+          <li>Phase 09 — Bon code sélectionné parmi les 10 + porte ouverte ✓</li>
+          <li>Phase 10 — 4 VIN effacés dans la zone finale ✓</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">EXTRACTION</div>
+      <div class="section-body">
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-label">ÉTAPE FINALE 1</div>
+            <div class="tl-text">S'assurer que les 4 VIN sont effacés et que la porte de l'étage est ouverte.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">ÉTAPE FINALE 2</div>
+            <div class="tl-text">Localiser et prendre l'<span class="hl">ascenseur</span>.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">ÉTAPE FINALE 3</div>
+            <div class="tl-text"><span class="hl" style="text-shadow: 0 0 8px #00ff41, 0 0 20px #00ff4166;">OPÉRATION TERMINÉE.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert success">
+      <strong>★ MISSION ACCOMPLIE</strong>
+      Toutes les conditions remplies. Prendre l'ascenseur. L'équipe est exfiltrée. Opération réussie.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  // ESCAPE SYSTEM GUIDE — USAGE OPÉRATEUR UNIQUEMENT //<br>
+  <span class="cursor">CONNEXION ACTIVE</span>
+</footer>
+
+<script>
+  const totalPanels = 11;
+
+  function showPanel(index, btn) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('visible'));
+    document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
+
+    document.getElementById('panel-' + index).classList.add('visible');
+    btn.classList.add('active');
+
+    const pct = Math.round((index / (totalPanels - 1)) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+
+    document.querySelector('.content-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>
