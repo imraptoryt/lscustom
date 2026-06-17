@@ -2,1190 +2,431 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ESCAPE — GUIDE OPÉRATEUR</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>BLACK VULTURE MC — Bon de commande</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Oswald:wght@400;500;600;700&family=Special+Elite&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --g0: #000a00;
-    --g1: #001a00;
-    --g2: #003300;
-    --g3: #00ff41;
-    --g4: #00cc33;
-    --g5: #009922;
-    --g6: #006611;
-    --dim: #00441100;
-    --warn: #ffaa00;
-    --red: #ff3333;
-    --glow: 0 0 8px #00ff4188, 0 0 20px #00ff4133;
-    --glow-sm: 0 0 4px #00ff4166;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--g0);
-    color: var(--g3);
-    font-family: 'Share Tech Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-    cursor: crosshair;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.015) 2px, rgba(0,255,65,0.015) 4px);
-    pointer-events: none;
-    z-index: 9999;
-  }
-
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.8) 100%);
-    pointer-events: none;
-    z-index: 9998;
-  }
-
-  .scanline {
-    position: fixed;
-    top: -100%;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: rgba(0,255,65,0.06);
-    animation: scan 8s linear infinite;
-    pointer-events: none;
-    z-index: 10000;
-  }
-
-  @keyframes scan { to { top: 110%; } }
-
-  /* HEADER */
-  header {
-    text-align: center;
-    padding: 3rem 2rem 2rem;
-    position: relative;
-    border-bottom: 1px solid var(--g6);
-  }
-
-  .skull-wrap {
-    display: inline-block;
-    margin-bottom: 1.5rem;
-    filter: drop-shadow(0 0 12px #00ff41aa);
-    animation: flicker 6s infinite;
-  }
-
-  @keyframes flicker {
-    0%,95%,100% { opacity:1; filter: drop-shadow(0 0 12px #00ff41aa); }
-    96% { opacity:0.5; filter: drop-shadow(0 0 4px #00ff4155); }
-    97% { opacity:1; filter: drop-shadow(0 0 20px #00ff41cc); }
-    98% { opacity:0.7; }
-  }
-
-  h1 {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(1.4rem, 4vw, 2.6rem);
-    font-weight: 900;
-    letter-spacing: 0.2em;
-    text-shadow: var(--glow);
-    margin-bottom: 0.4rem;
-  }
-
-  .subtitle {
-    font-family: 'VT323', monospace;
-    font-size: 1.3rem;
-    color: var(--g5);
-    letter-spacing: 0.3em;
-    animation: blink-sub 3s infinite;
-  }
-
-  @keyframes blink-sub {
-    0%,49%,51%,100% { opacity:1; }
-    50% { opacity:0.3; }
-  }
-
-  .header-line {
-    font-size: 0.7rem;
-    color: var(--g6);
-    letter-spacing: 0.15em;
-    margin-top: 1rem;
-  }
-
-  /* SELECTOR */
-  .selector-wrap {
-    max-width: 960px;
-    margin: 2rem auto 0;
-    padding: 0 1.5rem;
-  }
-
-  .selector-label {
-    font-size: 0.72rem;
-    letter-spacing: 0.2em;
-    color: var(--g5);
-    margin-bottom: 0.8rem;
-  }
-
-  .selector-label::before { content: '> '; color: var(--g3); }
-
-  .steps-nav {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 8px;
-    margin-bottom: 2.5rem;
-  }
-
-  .step-btn {
-    background: var(--g1);
-    border: 1px solid var(--g6);
-    color: var(--g5);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
-    padding: 10px 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: left;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .step-btn::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: var(--g6);
-    transition: all 0.15s;
-  }
-
-  .step-btn:hover, .step-btn.active {
-    background: var(--g2);
-    border-color: var(--g4);
-    color: var(--g3);
-    text-shadow: var(--glow-sm);
-  }
-
-  .step-btn:hover::before, .step-btn.active::before {
-    background: var(--g3);
-    box-shadow: var(--glow);
-  }
-
-  .step-btn.active {
-    border-color: var(--g3);
-    box-shadow: inset 0 0 12px rgba(0,255,65,0.08);
-  }
-
-  .step-num {
-    display: block;
-    font-family: 'Orbitron', monospace;
-    font-size: 0.6rem;
-    color: var(--g6);
-    margin-bottom: 4px;
-  }
-
-  .step-btn.active .step-num, .step-btn:hover .step-num { color: var(--g5); }
-
-  /* CONTENT PANEL */
-  .content-wrap {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 1.5rem 4rem;
-  }
-
-  .step-panel {
-    display: none;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .step-panel.visible { display: block; }
-
-  @keyframes fadeIn {
-    from { opacity:0; transform: translateY(8px); }
-    to { opacity:1; transform: translateY(0); }
-  }
-
-  .panel-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    border: 1px solid var(--g5);
-    background: linear-gradient(135deg, var(--g1) 0%, transparent 100%);
-    position: relative;
-  }
-
-  .panel-header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--g3);
-    opacity: 0;
-    animation: border-flash 4s infinite;
-  }
-
-  @keyframes border-flash {
-    0%,90%,100% { opacity:0; }
-    95% { opacity:0.3; }
-  }
-
-  .panel-icon {
-    font-family: 'Orbitron', monospace;
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: var(--g3);
-    text-shadow: var(--glow);
-    line-height: 1;
-    min-width: 60px;
-    text-align: center;
-  }
-
-  .panel-meta { flex: 1; }
-
-  .panel-tag {
-    font-size: 0.65rem;
-    letter-spacing: 0.25em;
-    color: var(--g5);
-    margin-bottom: 0.4rem;
-  }
-
-  .panel-title {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(1rem, 2.5vw, 1.4rem);
-    font-weight: 700;
-    color: var(--g3);
-    text-shadow: var(--glow-sm);
-    margin-bottom: 0.5rem;
-  }
-
-  .panel-desc {
-    font-size: 0.8rem;
-    color: var(--g5);
-    line-height: 1.6;
-  }
-
-  .status-tag {
-    display: inline-block;
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    padding: 3px 10px;
-    border: 1px solid;
-    margin-top: 0.6rem;
-  }
-
-  .status-tag.required { border-color: var(--warn); color: var(--warn); }
-  .status-tag.parallel { border-color: #00aaff; color: #00aaff; }
-  .status-tag.final { border-color: var(--red); color: var(--red); }
-  .status-tag.unlock { border-color: var(--g3); color: var(--g3); }
-
-  /* SECTIONS */
-  .section {
-    margin-bottom: 1.5rem;
-    border: 1px solid var(--g6);
-    background: var(--g1);
-  }
-
-  .section-head {
-    padding: 0.7rem 1rem;
-    background: rgba(0,255,65,0.05);
-    border-bottom: 1px solid var(--g6);
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    color: var(--g4);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .section-head::before { content: '//'; color: var(--g6); }
-
-  .section-body {
-    padding: 1rem 1.2rem;
-  }
-
-  /* STEPS LIST */
-  .steps-list { list-style: none; }
-
-  .steps-list li {
-    display: flex;
-    gap: 1rem;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid rgba(0,255,65,0.06);
-    font-size: 0.82rem;
-    line-height: 1.6;
-    color: var(--g4);
-    align-items: flex-start;
-  }
-
-  .steps-list li:last-child { border-bottom: none; }
-
-  .li-num {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.6rem;
-    color: var(--g6);
-    min-width: 24px;
-    padding-top: 3px;
-  }
-
-  /* ALERT BOX */
-  .alert {
-    padding: 0.8rem 1rem;
-    border-left: 3px solid;
-    font-size: 0.78rem;
-    line-height: 1.6;
-    margin-bottom: 1rem;
-  }
-
-  .alert.warn { border-color: var(--warn); color: var(--warn); background: rgba(255,170,0,0.05); }
-  .alert.info { border-color: #00aaff; color: #00aaff; background: rgba(0,170,255,0.05); }
-  .alert.danger { border-color: var(--red); color: var(--red); background: rgba(255,51,51,0.05); }
-  .alert.success { border-color: var(--g3); color: var(--g3); background: rgba(0,255,65,0.05); }
-
-  .alert strong { font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 0.15em; display: block; margin-bottom: 4px; }
-
-  /* CODE BOX */
-  .code-box {
-    background: #000500;
-    border: 1px solid var(--g6);
-    padding: 0.8rem 1rem;
-    font-size: 0.78rem;
-    color: var(--g3);
-    margin: 0.8rem 0;
-    position: relative;
-  }
-
-  .code-box::before {
-    content: 'NOTE';
-    position: absolute;
-    top: -1px; right: 12px;
-    background: #000500;
-    font-size: 0.55rem;
-    letter-spacing: 0.2em;
-    color: var(--g6);
-    padding: 0 6px;
-  }
-
-  /* TIMELINE */
-  .timeline {
-    position: relative;
-    padding-left: 1.5rem;
-  }
-
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: 6px; top: 0; bottom: 0;
-    width: 1px;
-    background: var(--g6);
-  }
-
-  .tl-item {
-    position: relative;
-    margin-bottom: 1.2rem;
-  }
-
-  .tl-item::before {
-    content: '';
-    position: absolute;
-    left: -1.15rem;
-    top: 5px;
-    width: 8px; height: 8px;
-    border: 1px solid var(--g4);
-    background: var(--g0);
-    transform: rotate(45deg);
-  }
-
-  .tl-label {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.62rem;
-    color: var(--g5);
-    letter-spacing: 0.12em;
-    margin-bottom: 3px;
-  }
-
-  .tl-text {
-    font-size: 0.8rem;
-    color: var(--g4);
-    line-height: 1.5;
-  }
-
-  /* PARALLEL BADGE */
-  .parallel-note {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 0.8rem;
-    border: 1px dashed #00aaff44;
-    color: #00aaff;
-    font-size: 0.72rem;
-    margin-bottom: 1.2rem;
-    background: rgba(0,170,255,0.04);
-  }
-
-  .parallel-note svg { flex-shrink: 0; }
-
-  /* PROGRESS BAR */
-  .progress-wrap {
-    margin-bottom: 2rem;
-    position: relative;
-  }
-
-  .progress-label {
-    font-size: 0.65rem;
-    color: var(--g5);
-    letter-spacing: 0.15em;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .progress-track {
-    height: 4px;
-    background: var(--g2);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--g3);
-    box-shadow: var(--glow);
-    transition: width 0.5s ease;
-  }
-
-  /* FOOTER */
-  footer {
-    text-align: center;
-    padding: 2rem;
-    border-top: 1px solid var(--g6);
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    color: var(--g6);
-  }
-
-  /* CURSOR BLINK */
-  .cursor::after {
-    content: '█';
-    animation: cur 1s step-end infinite;
-  }
-  @keyframes cur { 50% { opacity:0; } }
-
-  /* GRID 2col */
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  @media (max-width: 600px) {
-    .grid-2 { grid-template-columns: 1fr; }
-    .steps-nav { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  /* CHECKLIST */
-  .checklist { list-style: none; }
-  .checklist li {
-    padding: 5px 0;
-    font-size: 0.8rem;
-    color: var(--g4);
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    border-bottom: 1px solid rgba(0,255,65,0.05);
-  }
-  .checklist li:last-child { border-bottom: none; }
-  .checklist li::before {
-    content: '[ ]';
-    color: var(--g6);
-    font-family: 'Orbitron', monospace;
-    font-size: 0.6rem;
-    margin-top: 2px;
-    flex-shrink: 0;
-  }
-
-  /* HIGHLIGHT */
-  .hl { color: var(--g3); text-shadow: var(--glow-sm); font-weight: bold; }
-  .hl-warn { color: var(--warn); }
-  .hl-red { color: var(--red); }
-  .hl-blue { color: #00aaff; }
+:root{
+  --bg:#0a0807; --panel:#14110d; --panel2:#1b1610; --line:#352b20; --line2:#46382a;
+  --orange:#ff6a00; --amber:#ffae3a; --ember:#ff7a1a; --blood:#9b2218;
+  --bone:#ece1cd; --txt:#e9ddca; --muted:#8d7d68;
+  --glow:0 0 22px rgba(255,106,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter',sans-serif;
+  background:radial-gradient(1000px 700px at 50% -12%, #1d1409 0%, transparent 58%), #050403;
+  color:var(--txt); display:flex; align-items:center; justify-content:center;
+  min-height:100vh; padding:24px; -webkit-font-smoothing:antialiased;
+}
+.device{
+  position:relative; width:100%; max-width:920px; aspect-ratio:16/11;
+  border-radius:18px; overflow:hidden; background:var(--bg);
+  border:1px solid #221a12;
+  box-shadow:0 34px 90px rgba(0,0,0,.7), 0 0 0 1px #000, 0 0 80px rgba(255,106,0,.06);
+}
+.grain{position:absolute;inset:0;z-index:56;pointer-events:none;opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.vignette{position:absolute;inset:0;z-index:55;pointer-events:none;
+  background:radial-gradient(120% 120% at 50% 35%, transparent 55%, rgba(0,0,0,.55) 100%)}
+
+/* ===== embers ===== */
+.embers{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.embers i{position:absolute;bottom:-10px;width:3px;height:3px;border-radius:50%;
+  background:var(--ember);box-shadow:0 0 8px var(--ember);opacity:0;animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0) scale(1);opacity:0}10%{opacity:.9}100%{transform:translateY(-340px) translateX(var(--dx)) scale(.3);opacity:0}}
+@media (prefers-reduced-motion:reduce){.embers{display:none}}
+
+/* ===== BOOT ===== */
+#boot{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;background:radial-gradient(680px 520px at 50% 40%, #150c05, #060403);transition:opacity .7s ease}
+.logo-stage{position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center}
+.logo-glow{position:absolute;width:230px;height:230px;border-radius:50%;
+  background:radial-gradient(circle, rgba(255,122,26,.55), rgba(255,106,0,.12) 45%, transparent 70%);
+  opacity:.2;transform:scale(.6);filter:blur(4px)}
+.logo-ring{position:absolute;width:210px;height:210px;border-radius:50%;border:1px solid rgba(255,122,26,.35);
+  animation:spin 16s linear infinite}
+.logo-ring::before{content:"";position:absolute;top:-4px;left:50%;width:6px;height:6px;border-radius:50%;
+  background:var(--amber);box-shadow:0 0 10px var(--amber);transform:translateX(-50%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.boot-logo{width:172px;height:172px;object-fit:contain;position:relative;z-index:2;opacity:0;
+  clip-path:inset(100% 0 0 0)}
+.boot-logo.sheen::after{content:""}
+.fallback{position:absolute;z-index:2;display:none}
+#boot.nologo .fallback{display:block}
+#boot.nologo .boot-logo{display:none}
+
+.club{font-family:'Pirata One',cursive;font-size:46px;line-height:.9;color:var(--bone);
+  text-shadow:0 0 18px rgba(255,106,0,.45), 0 2px 0 #000;letter-spacing:1px;
+  opacity:0;transform:translateY(10px);animation:rise-in .9s ease forwards;animation-delay:1.5s}
+.club b{color:var(--orange)}
+.mc{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:7px;font-size:11px;color:var(--amber);
+  opacity:0;animation:rise-in .9s ease forwards;animation-delay:1.9s}
+@keyframes rise-in{to{opacity:1;transform:translateY(0)}}
+.ornament{display:flex;align-items:center;gap:10px;opacity:0;animation:rise-in .9s ease forwards;animation-delay:2.1s}
+.ornament .l{width:90px;height:1px;background:linear-gradient(90deg,transparent,var(--orange))}
+.ornament .r{width:90px;height:1px;background:linear-gradient(90deg,var(--orange),transparent)}
+.ornament .d{color:var(--orange);font-size:9px;text-shadow:var(--glow)}
+.bar{width:min(64%,360px);height:6px;border:1px solid var(--line);border-radius:3px;background:#0a0705;overflow:hidden;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blood),var(--orange),var(--amber));box-shadow:var(--glow)}
+.barrow{display:flex;align-items:center;gap:12px}
+.pct{font-family:'Oswald',sans-serif;font-weight:600;font-size:12px;color:var(--bone);min-width:34px;text-align:right}
+.status{font-family:'Special Elite',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;height:14px}
+
+/* ===== APP ===== */
+#app{position:absolute;inset:0;z-index:10;display:none;flex-direction:column;
+  background:linear-gradient(0deg, rgba(255,106,0,.025), transparent 42%), var(--bg)}
+#app.show{display:flex;animation:fadein .6s ease}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+.app-head{display:flex;align-items:center;gap:14px;padding:20px 22px 16px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(255,106,0,.05), transparent)}
+.patch{position:relative;width:54px;height:54px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;
+  background:#0c0a07;border:2px solid var(--orange);box-shadow:0 0 16px rgba(255,106,0,.35), inset 0 0 12px rgba(0,0,0,.6)}
+.patch::after{content:"";position:absolute;inset:3px;border:1px dashed rgba(255,174,58,.4);border-radius:9px}
+.patch img{width:40px;height:40px;object-fit:contain}
+.patch .fb{display:none}.patch.nologo img{display:none}.patch.nologo .fb{display:block}
+.app-head .club-sm{font-family:'Pirata One',cursive;font-size:26px;line-height:.95;color:var(--bone);text-shadow:0 1px 0 #000,0 0 14px rgba(255,106,0,.35)}
+.app-head .club-sm b{color:var(--orange)}
+.app-head .sub{font-family:'Oswald',sans-serif;font-weight:500;font-size:10px;letter-spacing:4px;color:var(--amber);margin-top:2px}
+.app-head .badge{margin-left:auto;font-family:'Oswald',sans-serif;font-weight:600;font-size:10px;letter-spacing:1px;
+  color:var(--amber);border:1px solid var(--line2);border-radius:4px;padding:5px 10px;background:#0d0a07}
+.app-head .badge .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px var(--amber);margin-right:5px;vertical-align:middle}
+
+.body{flex:1;display:grid;grid-template-columns:1.4fr 1fr;gap:14px;padding:16px;overflow:auto}
+.body::-webkit-scrollbar{width:8px}.body::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+
+.card{position:relative;background:linear-gradient(180deg,var(--panel),#0f0c08);border:1px solid var(--line);border-radius:10px;padding:16px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.015), 0 6px 18px rgba(0,0,0,.4)}
+.card::before{content:"";position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,106,0,.5),transparent)}
+.card h2{font-family:'Oswald',sans-serif;font-weight:600;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--bone);
+  margin-bottom:14px;display:flex;align-items:center;gap:9px}
+.card h2::before{content:"";width:7px;height:7px;background:var(--orange);box-shadow:var(--glow);transform:rotate(45deg)}
+
+.item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:var(--panel2);
+  border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:9px;transition:border-color .2s,box-shadow .2s}
+.item.active{border-color:var(--orange);box-shadow:inset 0 0 22px rgba(255,106,0,.08)}
+.item .nm{font-family:'Oswald',sans-serif;font-weight:600;font-size:16px;letter-spacing:.5px;color:var(--bone)}
+.item .nm .code{font-family:'Special Elite',monospace;font-size:10px;color:#6f5c46;letter-spacing:0;font-weight:400}
+.item .meta{font-family:'Special Elite',monospace;font-size:10.5px;color:var(--muted);margin-top:3px}
+.item .meta b{color:var(--amber);font-weight:400}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:32px;height:32px;border-radius:7px;border:1px solid var(--line2);background:linear-gradient(180deg,#1a140d,#0d0a06);
+  color:var(--orange);font-size:18px;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;transition:.15s;font-family:'Oswald'}
+.qty button:hover{border-color:var(--orange);box-shadow:0 0 10px rgba(255,106,0,.3)}
+.qty button:active{transform:scale(.9)}
+.qty input{width:54px;height:32px;text-align:center;background:#0a0705;border:1px solid var(--line);border-radius:7px;color:var(--bone);
+  font-family:'Special Elite',monospace;font-size:15px}
+.qty input:focus{outline:none;border-color:var(--orange)}
+
+.field{margin-bottom:12px}
+.field label{display:block;font-family:'Oswald',sans-serif;font-weight:500;font-size:10px;color:var(--amber);letter-spacing:2px;margin-bottom:5px;text-transform:uppercase}
+.field label .req{color:var(--blood)}
+.field input,.field textarea{width:100%;background:#0a0705;border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--txt);font-family:'Inter';font-size:13px;transition:.15s}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 1px var(--orange),0 0 12px rgba(255,106,0,.2)}
+.field textarea{resize:none;min-height:58px}
+
+.readout{position:sticky;top:0}
+.line{display:flex;justify-content:space-between;align-items:baseline;font-family:'Special Elite',monospace;font-size:12.5px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.line span:first-child{color:var(--muted)} .line b{color:var(--txt);font-weight:400}
+.line.acc b{color:var(--amber)}
+.tot{display:flex;justify-content:space-between;align-items:baseline;margin-top:13px;padding-top:13px;border-top:2px solid var(--orange)}
+.tot span{font-family:'Oswald',sans-serif;font-weight:600;font-size:11px;color:var(--amber);letter-spacing:2px}
+.tot b{font-family:'Oswald',sans-serif;font-weight:700;font-size:28px;color:var(--orange);text-shadow:var(--glow)}
+.wline{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;font-family:'Special Elite',monospace;font-size:11.5px}
+.wline span{color:var(--muted);letter-spacing:1px} .wline b{color:var(--amber);font-weight:400}
+
+.send{width:100%;margin-top:16px;padding:15px;border:none;border-radius:9px;cursor:pointer;font-family:'Oswald',sans-serif;font-weight:700;
+  letter-spacing:3px;font-size:14px;color:#150900;background:linear-gradient(180deg,var(--amber),var(--orange));
+  box-shadow:0 0 26px rgba(255,106,0,.4), inset 0 1px 0 rgba(255,255,255,.3);transition:.18s;text-transform:uppercase}
+.send:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.send:active{transform:translateY(0) scale(.99)}
+.send:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4);box-shadow:none}
+.note-mini{font-family:'Special Elite',monospace;font-size:10px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+
+#ov{position:absolute;inset:0;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:15px;padding:24px;text-align:center;background:rgba(6,4,3,.95);backdrop-filter:blur(4px)}
+#ov.show{display:flex;animation:fadein .3s}
+#ov .icon{font-size:52px}
+#ov h3{font-family:'Pirata One',cursive;font-size:30px;letter-spacing:1px}
+#ov p{font-family:'Special Elite',monospace;font-size:11.5px;color:var(--muted);max-width:400px;line-height:1.6}
+#ov.ok h3{color:var(--amber);text-shadow:0 0 18px rgba(255,174,58,.5)}
+#ov.err h3{color:var(--blood);text-shadow:0 0 18px rgba(155,34,24,.6)}
+#ov button{margin-top:6px;padding:12px 24px;border:1px solid var(--orange);background:transparent;color:var(--orange);border-radius:8px;
+  font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:11px;cursor:pointer;transition:.15s;text-transform:uppercase}
+#ov button:hover{background:var(--orange);color:#150900}
+
+@media (max-width:720px){.device{aspect-ratio:auto;height:92vh}.body{grid-template-columns:1fr}.club{font-size:38px}}
 </style>
 </head>
 <body>
-<div class="scanline"></div>
+<div class="device">
+  <div class="vignette"></div>
+  <div class="grain"></div>
+  <div class="embers" id="embers"></div>
 
-<header>
-  <!-- SKULL SVG -->
-  <div class="skull-wrap">
-    <svg width="110" height="120" viewBox="0 0 110 120" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="sg" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stop-color="#00ff41" stop-opacity="0.15"/>
-          <stop offset="100%" stop-color="#000a00" stop-opacity="0"/>
-        </radialGradient>
-        <filter id="gf">
-          <feGaussianBlur stdDeviation="1.5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-
-      <!-- Skull cranium -->
-      <ellipse cx="55" cy="45" rx="38" ry="38" fill="none" stroke="#00ff41" stroke-width="1.5" filter="url(#gf)"/>
-      <ellipse cx="55" cy="45" rx="38" ry="38" fill="url(#sg)"/>
-
-      <!-- Cranium top detail lines -->
-      <path d="M 30 25 Q 55 15 80 25" fill="none" stroke="#00aa2288" stroke-width="0.8"/>
-      <path d="M 20 42 Q 55 35 90 42" fill="none" stroke="#00aa2244" stroke-width="0.8"/>
-
-      <!-- Jaw base -->
-      <path d="M 25 72 L 25 95 Q 25 105 35 108 L 55 110 L 75 108 Q 85 105 85 95 L 85 72" fill="none" stroke="#00ff41" stroke-width="1.5" filter="url(#gf)"/>
-      <path d="M 25 72 L 85 72" fill="none" stroke="#00ff41" stroke-width="1.5"/>
-
-      <!-- Jaw fill -->
-      <path d="M 25 72 L 25 95 Q 25 105 35 108 L 55 110 L 75 108 Q 85 105 85 95 L 85 72 Z" fill="url(#sg)"/>
-
-      <!-- Teeth -->
-      <rect x="31" y="72" width="9" height="14" rx="1" fill="none" stroke="#00ff41" stroke-width="1.2"/>
-      <rect x="43" y="72" width="9" height="16" rx="1" fill="none" stroke="#00ff41" stroke-width="1.2"/>
-      <rect x="55" y="72" width="9" height="16" rx="1" fill="none" stroke="#00ff41" stroke-width="1.2"/>
-      <rect x="67" y="72" width="9" height="14" rx="1" fill="none" stroke="#00ff41" stroke-width="1.2"/>
-
-      <!-- Teeth fill glow -->
-      <rect x="31" y="72" width="9" height="14" rx="1" fill="#00ff4108"/>
-      <rect x="43" y="72" width="9" height="16" rx="1" fill="#00ff4108"/>
-      <rect x="55" y="72" width="9" height="16" rx="1" fill="#00ff4108"/>
-      <rect x="67" y="72" width="9" height="14" rx="1" fill="#00ff4108"/>
-
-      <!-- Eye sockets -->
-      <ellipse cx="38" cy="48" rx="13" ry="14" fill="#000a00" stroke="#00ff41" stroke-width="1.5"/>
-      <ellipse cx="72" cy="48" rx="13" ry="14" fill="#000a00" stroke="#00ff41" stroke-width="1.5"/>
-
-      <!-- Eye inner glow -->
-      <ellipse cx="38" cy="48" rx="8" ry="9" fill="#001800" stroke="#00cc33" stroke-width="0.8"/>
-      <ellipse cx="72" cy="48" rx="8" ry="9" fill="#001800" stroke="#00cc33" stroke-width="0.8"/>
-
-      <!-- Eye pupils (circuit pattern) -->
-      <circle cx="38" cy="48" r="3" fill="#00ff41" opacity="0.6"/>
-      <circle cx="72" cy="48" r="3" fill="#00ff41" opacity="0.6"/>
-      <line x1="34" y1="44" x2="42" y2="52" stroke="#00ff41" stroke-width="0.5" opacity="0.5"/>
-      <line x1="42" y1="44" x2="34" y2="52" stroke="#00ff41" stroke-width="0.5" opacity="0.5"/>
-      <line x1="68" y1="44" x2="76" y2="52" stroke="#00ff41" stroke-width="0.5" opacity="0.5"/>
-      <line x1="76" y1="44" x2="68" y2="52" stroke="#00ff41" stroke-width="0.5" opacity="0.5"/>
-
-      <!-- Nose cavity -->
-      <path d="M 49 60 L 55 55 L 61 60 L 59 66 L 51 66 Z" fill="#000a00" stroke="#009922" stroke-width="1"/>
-
-      <!-- Cheekbone details -->
-      <path d="M 22 55 Q 18 65 25 72" fill="none" stroke="#006611" stroke-width="0.8"/>
-      <path d="M 88 55 Q 92 65 85 72" fill="none" stroke="#006611" stroke-width="0.8"/>
-
-      <!-- Circuit traces on skull -->
-      <path d="M 55 8 L 55 15" stroke="#00ff4133" stroke-width="1" stroke-dasharray="2,2"/>
-      <path d="M 15 42 L 23 42" stroke="#00ff4133" stroke-width="1" stroke-dasharray="2,2"/>
-      <path d="M 95 42 L 87 42" stroke="#00ff4133" stroke-width="1" stroke-dasharray="2,2"/>
-
-      <circle cx="55" cy="7" r="2" fill="none" stroke="#00ff4155" stroke-width="1"/>
-      <circle cx="14" cy="42" r="2" fill="none" stroke="#00ff4155" stroke-width="1"/>
-      <circle cx="96" cy="42" r="2" fill="none" stroke="#00ff4155" stroke-width="1"/>
-    </svg>
+  <!-- ======= BOOT ======= -->
+  <div id="boot">
+    <div class="logo-stage">
+      <div class="logo-glow" id="glow"></div>
+      <div class="logo-ring"></div>
+      <img class="boot-logo" id="bootLogo" src="https://imgg.fr/r/bDf0pGQR.png" alt="Black Vulture MC">
+      <svg class="fallback" width="172" height="172" viewBox="0 0 200 200" aria-hidden="true">
+        <g fill="none" stroke="#ff6a00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M100 70 C60 40 24 52 18 70 C40 66 56 74 70 90 C50 96 40 110 42 128 C58 112 78 110 96 120 L100 150 L104 120 C122 110 142 112 158 128 C160 110 150 96 130 90 C144 74 160 66 182 70 C176 52 140 40 100 70 Z"/>
+          <circle cx="100" cy="86" r="9" fill="#ff6a00" stroke="none"/>
+        </g>
+      </svg>
+    </div>
+    <div class="club">BLACK <b>VULTURE</b></div>
+    <div class="mc">MOTORCYCLE&nbsp;&nbsp;CLUB</div>
+    <div class="ornament"><span class="l"></span><span class="d">◆</span><span class="r"></span></div>
+    <div class="barrow"><div class="bar"><i id="barfill"></i></div><span class="pct" id="pct">0%</span></div>
+    <div class="status" id="status">Initialisation…</div>
   </div>
 
-  <h1>ESCAPE SYSTEM</h1>
-  <div class="subtitle">// GUIDE OPÉRATEUR v1.0 //</div>
-  <div class="header-line">ACCÈS RESTREINT — USAGE INTERNE UNIQUEMENT — CLASSIFIED</div>
-</header>
+  <!-- ======= APP ======= -->
+  <div id="app">
+    <div class="app-head">
+      <div class="patch" id="patch">
+        <img src="https://imgg.fr/r/bDf0pGQR.png" alt="logo">
+        <svg class="fb" width="40" height="40" viewBox="0 0 200 200"><g fill="none" stroke="#ff6a00" stroke-width="5" stroke-linejoin="round"><path d="M100 70 C60 40 24 52 18 70 C40 66 56 74 70 90 C50 96 40 110 42 128 C58 112 78 110 96 120 L100 150 L104 120 C122 110 142 112 158 128 C160 110 150 96 130 90 C144 74 160 66 182 70 C176 52 140 40 100 70 Z"/></g></svg>
+      </div>
+      <div>
+        <div class="club-sm">BLACK <b>VULTURE</b></div>
+        <div class="sub">MC · BON DE COMMANDE</div>
+      </div>
+      <div class="badge"><span class="dot"></span>CLUBHOUSE EN LIGNE</div>
+    </div>
 
-<div class="selector-wrap">
-  <div class="selector-label">SÉLECTIONNER UNE PHASE D'OPÉRATION</div>
-
-  <div class="steps-nav" id="navGrid">
-    <button class="step-btn active" onclick="showPanel(0, this)">
-      <span class="step-num">PHASE 01</span>
-      ACCÈS BOUTIQUE
-    </button>
-    <button class="step-btn" onclick="showPanel(1, this)">
-      <span class="step-num">PHASE 02</span>
-      COFFRE-FORT
-    </button>
-    <button class="step-btn" onclick="showPanel(2, this)">
-      <span class="step-num">PHASE 03</span>
-      RÉCUPÉRER LA SCIE
-    </button>
-    <button class="step-btn" onclick="showPanel(3, this)">
-      <span class="step-num">PHASE 04</span>
-      PC + ÉNIGMES VIN
-    </button>
-    <button class="step-btn" onclick="showPanel(4, this)">
-      <span class="step-num">PHASE 05</span>
-      DÉCODEUR COULEURS
-    </button>
-    <button class="step-btn" onclick="showPanel(5, this)">
-      <span class="step-num">PHASE 06</span>
-      ZONE CACHÉE LS
-    </button>
-    <button class="step-btn" onclick="showPanel(6, this)">
-      <span class="step-num">PHASE 07</span>
-      ACCÈS FINAL
-    </button>
-    <button class="step-btn" onclick="showPanel(7, this)">
-      <span class="step-num">PHASE 08</span>
-      CLÉ + BUREAU
-    </button>
-    <button class="step-btn" onclick="showPanel(8, this)">
-      <span class="step-num">PHASE 09</span>
-      CODE DU BUREAU
-    </button>
-    <button class="step-btn" onclick="showPanel(9, this)">
-      <span class="step-num">PHASE 10</span>
-      EFFACER LES VIN
-    </button>
-    <button class="step-btn" onclick="showPanel(10, this)">
-      <span class="step-num">PHASE 11</span>
-      EXTRACTION FINALE
-    </button>
+    <div class="body">
+      <div>
+        <div class="card">
+          <h2>Matériel disponible</h2>
+          <div id="items"></div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h2>Informations client</h2>
+          <div class="field"><label>Nom de groupe <span class="req">*</span></label>
+            <input id="f_groupe" type="text" placeholder="Ex: Los Diablos" maxlength="60"></div>
+          <div class="field"><label>Numéro de téléphone <span class="req">*</span></label>
+            <input id="f_tel" type="text" placeholder="Ex: 555-0123" maxlength="30"></div>
+          <div class="field"><label>Date &amp; heure de livraison souhaitée <span class="req">*</span></label>
+            <input id="f_livr" type="text" placeholder="Ex: Vendredi 21h — Pier 400"></div>
+          <div class="field"><label>Note (autre)</label>
+            <textarea id="f_note" placeholder="Précisions, lieu de remise, demande spéciale…" maxlength="400"></textarea></div>
+        </div>
+      </div>
+      <div>
+        <div class="card readout">
+          <h2>Récapitulatif</h2>
+          <div id="recap"></div>
+          <div class="tot"><span>TOTAL À PAYER</span><b id="total">0$</b></div>
+          <div class="wline"><span>POIDS DES COMPOSANTS</span><b id="poids">0.0 kg</b></div>
+          <button class="send" id="send" disabled>Envoyer la commande</button>
+          <div class="note-mini" id="hint">Renseigne au moins 1 article + groupe + téléphone + livraison.</div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- PROGRESS -->
-  <div class="progress-wrap">
-    <div class="progress-label">
-      <span>PROGRESSION OPÉRATION</span>
-      <span id="progressPct">0%</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill" style="width:0%"></div>
-    </div>
+  <!-- ======= OVERLAY ======= -->
+  <div id="ov">
+    <div class="icon" id="ov_icon">🦅</div>
+    <h3 id="ov_title">Commande transmise</h3>
+    <p id="ov_msg"></p>
+    <button id="ov_btn">Nouvelle commande</button>
   </div>
 </div>
-
-<div class="content-wrap">
-
-  <!-- PANEL 0: ACCÈS BOUTIQUE -->
-  <div class="step-panel visible" id="panel-0">
-    <div class="panel-header">
-      <div class="panel-icon">01</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// POINT D'ENTRÉE — OBJECTIF PRIMAIRE</div>
-        <div class="panel-title">ACCÈS À LA BOUTIQUE</div>
-        <div class="panel-desc">Reconstituer les paniers d'achat des 4 clients sur la borne d'entrée pour déverrouiller l'accès.</div>
-        <span class="status-tag required">⚡ REQUIS — POINT DE DÉPART</span>
-      </div>
-    </div>
-
-    <div class="alert warn">
-      <strong>⚠ ATTENTION CRITIQUE</strong>
-      Ne pas oublier d'inclure les <span class="hl">partenaires</span> dans la reconstitution des paniers. Erreur fréquente des équipes.
-    </div>
-
-    <div class="section">
-      <div class="section-head">PROCÉDURE D'ACCÈS</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">01.</span><span>Localiser la <span class="hl">borne d'entrée</span> à l'extérieur de la boutique.</span></li>
-          <li><span class="li-num">02.</span><span>Identifier les <span class="hl">4 clients</span> — chacun a effectué des achats différents. Récupérer les informations sur ce qu'ils ont acheté.</span></li>
-          <li><span class="li-num">03.</span><span>Reproduire <span class="hl">exactement</span> le contenu de chaque panier sur la borne. L'ordre et les quantités sont importants.</span></li>
-          <li><span class="li-num">04.</span><span>Vérifier que les <span class="hl">partenaires</span> associés aux clients sont bien inclus dans la sélection — c'est l'élément le plus souvent oublié.</span></li>
-          <li><span class="li-num">05.</span><span>Valider sur la borne une fois les 4 paniers correctement reconstitués. La porte se déverrouille.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">INDICES SI BLOQUÉ</div>
-      <div class="section-body">
-        <div class="timeline">
-          <div class="tl-item">
-            <div class="tl-label">INDICE 1</div>
-            <div class="tl-text">Chercher dans la zone autour de la borne des documents, affiches ou notes indiquant les achats des clients.</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-label">INDICE 2</div>
-            <div class="tl-text">Les partenaires sont souvent indiqués en bas ou en marge des fiches clients — ne pas se concentrer uniquement sur les articles principaux.</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-label">INDICE 3</div>
-            <div class="tl-text">Si la borne ne valide pas, vérifier si un partenaire a été omis ou si une quantité est incorrecte.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="alert success">
-      <strong>✓ VALIDATION</strong>
-      Borne acceptée → Porte boutique déverrouillée → Passer à la Phase 02.
-    </div>
-  </div>
-
-  <!-- PANEL 1: COFFRE FORT -->
-  <div class="step-panel" id="panel-1">
-    <div class="panel-header">
-      <div class="panel-icon">02</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// INTÉRIEUR BOUTIQUE — OBJECTIF SECONDAIRE</div>
-        <div class="panel-title">OUVERTURE DU COFFRE-FORT</div>
-        <div class="panel-desc">Ranger le contenu du coffre pour trouver la note cachée au fond contenant le mot de passe du PC de Zoé.</div>
-        <span class="status-tag required">⚡ REQUIS</span>
-      </div>
-    </div>
-
-    <div class="alert info">
-      <strong>ℹ NOTE OPÉRATION</strong>
-      Le coffre-fort est situé à l'intérieur de la boutique. Il est déjà ouvert ou accessible — l'enjeu n'est pas de le cracker mais de <span class="hl-blue">vider et ranger son contenu</span> méthodiquement.
-    </div>
-
-    <div class="section">
-      <div class="section-head">PROCÉDURE</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">01.</span><span>Localiser le <span class="hl">coffre-fort</span> dans la boutique.</span></li>
-          <li><span class="li-num">02.</span><span>Sortir <span class="hl">tout le contenu</span> du coffre et le ranger de manière organisée à l'extérieur.</span></li>
-          <li><span class="li-num">03.</span><span>Une fois le coffre entièrement vidé, inspecter le <span class="hl">fond</span> du coffre.</span></li>
-          <li><span class="li-num">04.</span><span>Récupérer la <span class="hl-warn">petite note</span> cachée au fond — elle contient le MDP du PC de Zoé.</span></li>
-          <li><span class="li-num">05.</span><span>Mémoriser ou noter le mot de passe — il sera utilisé plus tard en Phase 04.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="code-box">
-      // La note peut être collée, glissée sous un fond amovible, ou placée dans un compartiment secret au fond du coffre. Inspecter minutieusement chaque surface intérieure.
-    </div>
-
-    <div class="alert success">
-      <strong>✓ VALIDATION</strong>
-      Note récupérée → MDP de Zoé obtenu → Nécessaire pour Phase 04.
-    </div>
-  </div>
-
-  <!-- PANEL 2: SCIE -->
-  <div class="step-panel" id="panel-2">
-    <div class="panel-header">
-      <div class="panel-icon">03</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// LS CUSTOM — RÉCUPÉRATION D'OUTIL</div>
-        <div class="panel-title">RÉCUPÉRER LA SCIE ÉLECTRIQUE</div>
-        <div class="panel-desc">Se rendre dans le garage LS Custom et localiser la scie électrique — indispensable pour la Phase 07.</div>
-        <span class="status-tag parallel">⟳ EN PARALLÈLE avec Phase 04 et 05</span>
-      </div>
-    </div>
-
-    <div class="parallel-note">
-      <svg width="16" height="16" viewBox="0 0 16 16"><path d="M 4 2 L 4 14 M 8 2 L 8 14 M 12 2 L 12 14" stroke="#00aaff" stroke-width="1.5" fill="none"/></svg>
-      Cette phase peut être effectuée simultanément avec les Phases 04 et 05 si l'équipe se sépare.
-    </div>
-
-    <div class="section">
-      <div class="section-head">LOCALISATION DE L'OUTIL</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">01.</span><span>Entrer dans le <span class="hl">garage LS Custom</span>.</span></li>
-          <li><span class="li-num">02.</span><span>Se diriger vers le <span class="hl">fond du garage</span>, côté <span class="hl-warn">droite</span>.</span></li>
-          <li><span class="li-num">03.</span><span>Localiser la <span class="hl">table de travail</span> au fond à droite.</span></li>
-          <li><span class="li-num">04.</span><span>Récupérer la <span class="hl-warn">scie électrique</span> posée sur cette table.</span></li>
-          <li><span class="li-num">05.</span><span>Conserver la scie — elle sera utilisée pour casser la porte en Phase 07.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="alert warn">
-        <strong>📍 POSITION</strong>
-        Fond du garage — Côté DROIT — Sur une table
-      </div>
-      <div class="alert success">
-        <strong>✓ UTILISATION</strong>
-        Phase 07 — Casser la porte de la zone finale
-      </div>
-    </div>
-  </div>
-
-  <!-- PANEL 3: PC + VIN -->
-  <div class="step-panel" id="panel-3">
-    <div class="panel-header">
-      <div class="panel-icon">04</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// LS CUSTOM — ACCÈS SYSTÈME</div>
-        <div class="panel-title">PC DE ZOÉ + NUMÉROS VIN</div>
-        <div class="panel-desc">Utiliser le MDP récupéré en Phase 02 pour accéder au PC de Zoé, résoudre les énigmes et obtenir l'accès aux 4 voitures pour relever leurs VIN.</div>
-        <span class="status-tag parallel">⟳ EN PARALLÈLE avec Phase 03 et 05</span>
-      </div>
-    </div>
-
-    <div class="parallel-note">
-      <svg width="16" height="16" viewBox="0 0 16 16"><path d="M 4 2 L 4 14 M 8 2 L 8 14 M 12 2 L 12 14" stroke="#00aaff" stroke-width="1.5" fill="none"/></svg>
-      Cette phase nécessite le MDP trouvé en Phase 02 (note dans le coffre de Zoé).
-    </div>
-
-    <div class="section">
-      <div class="section-head">ACCÈS AU PC</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">01.</span><span>Localiser le <span class="hl">PC de Zoé</span> dans LS Custom.</span></li>
-          <li><span class="li-num">02.</span><span>Entrer le <span class="hl">mot de passe</span> trouvé dans le coffre-fort (Phase 02).</span></li>
-          <li><span class="li-num">03.</span><span>Résoudre les <span class="hl-warn">énigmes</span> présentes sur le PC pour débloquer l'accès aux données véhicules.</span></li>
-          <li><span class="li-num">04.</span><span>Une fois les énigmes résolues, le système révèle les informations sur les <span class="hl">4 voitures</span> ciblées.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">RELEVÉ DES NUMÉROS VIN</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">05.</span><span>Localiser les <span class="hl">4 voitures</span> dans le garage LS Custom selon les données du PC.</span></li>
-          <li><span class="li-num">06.</span><span>Sur chaque voiture, trouver et noter le <span class="hl-warn">numéro VIN</span> — généralement visible sur le tableau de bord côté conducteur ou sur le montant de porte.</span></li>
-          <li><span class="li-num">07.</span><span>Relever les <span class="hl">4 VIN complets</span>. Ces numéros seront effacés en Phase 10 pour finaliser l'opération.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="alert danger">
-      <strong>⚠ CRITIQUE</strong>
-      Ne pas effacer les VIN maintenant — cela sera fait en Phase 10 dans la zone finale, en parallèle avec l'ouverture de porte.
-    </div>
-  </div>
-
-  <!-- PANEL 4: DÉCODEUR -->
-  <div class="step-panel" id="panel-4">
-    <div class="panel-header">
-      <div class="panel-icon">05</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// LS CUSTOM — DÉCHIFFREMENT</div>
-        <div class="panel-title">DÉCODEUR DE COULEURS</div>
-        <div class="panel-desc">Trouver le décodeur de couleurs caché derrière des conteneurs. Il fournit 9 couleurs avec leurs numéros correspondants — clé pour ouvrir l'arrière boutique.</div>
-        <span class="status-tag parallel">⟳ EN PARALLÈLE avec Phase 03 et 04</span>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">LOCALISATION DU DÉCODEUR</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">01.</span><span>Explorer la zone LS Custom et localiser des <span class="hl">conteneurs/containers</span>.</span></li>
-          <li><span class="li-num">02.</span><span>Chercher <span class="hl">derrière</span> ces conteneurs — le décodeur est caché là, pas visible de face.</span></li>
-          <li><span class="li-num">03.</span><span>Récupérer le <span class="hl-warn">décodeur de couleurs</span> — il liste 9 couleurs, chacune associée à un numéro.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">UTILISATION DU DÉCODEUR</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">04.</span><span>Revenir vers les <span class="hl">4 voitures</span> identifiées en Phase 04.</span></li>
-          <li><span class="li-num">05.</span><span>Observer la <span class="hl">couleur de chaque voiture</span> et trouver le numéro correspondant dans le décodeur.</span></li>
-          <li><span class="li-num">06.</span><span>Composer le code à partir des numéros de couleurs des 4 voitures — ce code ouvre <span class="hl-warn">l'arrière boutique cachée</span> du LS Custom.</span></li>
-          <li><span class="li-num">07.</span><span>Entrer le code sur la serrure ou le panneau de l'<span class="hl">arrière boutique cachée</span>.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="alert info">
-      <strong>ℹ MÉMO</strong>
-      Le décodeur = 9 couleurs → 9 numéros. Chaque voiture a une couleur → un chiffre. Le code final est formé par les chiffres des 4 voitures dans l'ordre.
-    </div>
-  </div>
-
-  <!-- PANEL 5: ZONE CACHÉE -->
-  <div class="step-panel" id="panel-5">
-    <div class="panel-header">
-      <div class="panel-icon">06</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// ARRIÈRE BOUTIQUE LS CUSTOM</div>
-        <div class="panel-title">ZONE CACHÉE — LECTURE DU MUR</div>
-        <div class="panel-desc">Dans l'arrière boutique cachée du LS, déchiffrer le code mural pour accéder à la phase finale.</div>
-        <span class="status-tag unlock">↗ DÉBLOQUÉ par Phase 05</span>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">PROCÉDURE DANS LA ZONE CACHÉE</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">01.</span><span>Entrer dans la <span class="hl">zone cachée</span> du LS Custom (débloquée avec le code couleurs de la Phase 05).</span></li>
-          <li><span class="li-num">02.</span><span>Examiner le <span class="hl">mur</span> dans cette zone — il y a deux faces à observer.</span></li>
-          <li><span class="li-num">03.</span><span>Sur un côté du mur : <span class="hl-warn">l'ordre des éléments</span>.</span></li>
-          <li><span class="li-num">04.</span><span>Directement <span class="hl">en face</span> (mur opposé ou autre côté) : le <span class="hl-warn">nombre correspondant</span> à chaque élément dans l'ordre.</span></li>
-          <li><span class="li-num">05.</span><span>Combiner les deux informations pour composer le <span class="hl">code final</span> qui donnera accès à la phase finale (Phase 07).</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="section">
-        <div class="section-head">MUR GAUCHE</div>
-        <div class="section-body">
-          <div style="color: var(--g5); font-size: 0.78rem; line-height: 1.8;">
-            → L'ordre des éléments<br>
-            → Séquence à suivre<br>
-            → Lire de haut en bas
-          </div>
-        </div>
-      </div>
-      <div class="section">
-        <div class="section-head">MUR FACE</div>
-        <div class="section-body">
-          <div style="color: var(--g5); font-size: 0.78rem; line-height: 1.8;">
-            → Le nombre correspondant<br>
-            → Associer à l'ordre du 1er mur<br>
-            → Former le code
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="alert success">
-      <strong>✓ VALIDATION</strong>
-      Code mural déchiffré → Utiliser ce code pour entrer dans la Phase 07 (zone finale).
-    </div>
-  </div>
-
-  <!-- PANEL 6: ACCÈS FINAL -->
-  <div class="step-panel" id="panel-6">
-    <div class="panel-header">
-      <div class="panel-icon">07</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// ZONE FINALE — POINT D'ENTRÉE</div>
-        <div class="panel-title">ACCÈS À LA ZONE FINALE</div>
-        <div class="panel-desc">Utiliser le code du mur et la scie électrique pour pénétrer dans la zone finale.</div>
-        <span class="status-tag final">⚠ ZONE FINALE</span>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">ENTRÉE DANS LA ZONE FINALE</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">01.</span><span>Utiliser le <span class="hl">code du mur</span> obtenu en Phase 06 pour atteindre l'accès à la zone finale.</span></li>
-          <li><span class="li-num">02.</span><span>Une fois devant la porte de la zone finale, utiliser la <span class="hl-warn">scie électrique</span> récupérée en Phase 03 pour <span class="hl">casser la porte</span>.</span></li>
-          <li><span class="li-num">03.</span><span>Entrer dans la zone finale.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="alert warn">
-        <strong>🔧 REQUIS</strong>
-        Scie électrique (Phase 03) indispensable.
-      </div>
-      <div class="alert warn">
-        <strong>🔑 REQUIS</strong>
-        Code mural (Phase 06) pour localiser l'accès.
-      </div>
-    </div>
-
-    <div class="alert success">
-      <strong>✓ VALIDATION</strong>
-      Porte cassée → Zone finale accessible → Commencer Phases 08 et 10 en parallèle.
-    </div>
-  </div>
-
-  <!-- PANEL 7: CLÉ + BUREAU -->
-  <div class="step-panel" id="panel-7">
-    <div class="panel-header">
-      <div class="panel-icon">08</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// ZONE FINALE — FOUILLE</div>
-        <div class="panel-title">TROUVER LA CLÉ ET LE BUREAU</div>
-        <div class="panel-desc">Fouiller les établis de la zone finale pour trouver la clé perdue permettant d'accéder au bureau.</div>
-        <span class="status-tag parallel">⟳ EN PARALLÈLE avec Phase 10</span>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">RECHERCHE DE LA CLÉ</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">01.</span><span>Entrer dans la zone finale (après Phase 07).</span></li>
-          <li><span class="li-num">02.</span><span>Localiser les <span class="hl">établis</span> présents dans cette zone.</span></li>
-          <li><span class="li-num">03.</span><span>Fouiller <span class="hl">chaque établi</span> méthodiquement — la clé est cachée dans l'un d'eux. Inspecter dessus, dessous, dans les tiroirs et compartiments.</span></li>
-          <li><span class="li-num">04.</span><span>Récupérer la <span class="hl-warn">clé perdue</span>.</span></li>
-          <li><span class="li-num">05.</span><span>Utiliser la clé pour <span class="hl">ouvrir le bureau</span> dans cette zone.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="alert info">
-      <strong>ℹ STRATÉGIE</strong>
-      Diviser l'équipe — une partie cherche la clé dans les établis, l'autre part effacer les VIN (Phase 10) pour optimiser le temps.
-    </div>
-
-    <div class="alert success">
-      <strong>✓ VALIDATION</strong>
-      Clé trouvée → Bureau ouvert → Accéder au bout de papier en Phase 09.
-    </div>
-  </div>
-
-  <!-- PANEL 8: CODE BUREAU -->
-  <div class="step-panel" id="panel-8">
-    <div class="panel-header">
-      <div class="panel-icon">09</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// BUREAU — DÉCHIFFREMENT FINAL</div>
-        <div class="panel-title">CODE DU BUREAU — 10 CODES À 4 CHIFFRES</div>
-        <div class="panel-desc">Dans le bureau se trouve un bout de papier avec 10 codes à 4 chiffres. Un seul est le bon — il ouvre la porte vers l'étage en dessus.</div>
-        <span class="status-tag unlock">↗ DÉBLOQUÉ par Phase 08</span>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">PROCÉDURE</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">01.</span><span>Entrer dans le <span class="hl">bureau</span> avec la clé obtenue en Phase 08.</span></li>
-          <li><span class="li-num">02.</span><span>Localiser le <span class="hl-warn">bout de papier</span> dans le bureau.</span></li>
-          <li><span class="li-num">03.</span><span>Observer les <span class="hl">10 codes à 4 chiffres</span> inscrits dessus.</span></li>
-          <li><span class="li-num">04.</span><span>Chercher dans le bureau ou la zone des <span class="hl">indices</span> permettant d'identifier le bon code parmi les 10.</span></li>
-          <li><span class="li-num">05.</span><span>Entrer le code correct sur la <span class="hl">serrure de la porte</span> menant à l'étage en dessous.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="code-box">
-      // 10 codes → 1 seul valide. Chercher des indices dans le bureau qui pointent vers le bon code : marques, surlignage, symboles, cohérence avec d'autres éléments trouvés dans l'escape.
-    </div>
-
-    <div class="alert warn">
-      <strong>⚠ MÉTHODE</strong>
-      Ne pas tester tous les codes au hasard. Chercher d'abord un indice qui identifie lequel des 10 est le correct. Un élément du bureau ou de la zone devrait indiquer le bon.
-    </div>
-
-    <div class="alert success">
-      <strong>✓ VALIDATION</strong>
-      Bon code trouvé → Porte vers l'étage en dessous ouverte.
-    </div>
-  </div>
-
-  <!-- PANEL 9: EFFACER VIN -->
-  <div class="step-panel" id="panel-9">
-    <div class="panel-header">
-      <div class="panel-icon">10</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// ZONE FINALE — MISSION PRINCIPALE</div>
-        <div class="panel-title">EFFACER LES 4 NUMÉROS VIN</div>
-        <div class="panel-desc">Localiser les 4 voitures dans la zone finale et effacer leurs numéros VIN — condition sine qua non pour accéder à l'extraction.</div>
-        <span class="status-tag parallel">⟳ EN PARALLÈLE avec Phase 08 et 09</span>
-      </div>
-    </div>
-
-    <div class="parallel-note">
-      <svg width="16" height="16" viewBox="0 0 16 16"><path d="M 4 2 L 4 14 M 8 2 L 8 14 M 12 2 L 12 14" stroke="#00aaff" stroke-width="1.5" fill="none"/></svg>
-      Peut être réalisé en simultané avec la recherche de la clé (Phase 08) et la résolution du code (Phase 09).
-    </div>
-
-    <div class="section">
-      <div class="section-head">PROCÉDURE D'EFFACEMENT</div>
-      <div class="section-body">
-        <ul class="steps-list">
-          <li><span class="li-num">01.</span><span>Localiser les <span class="hl">4 voitures</span> dans la zone finale.</span></li>
-          <li><span class="li-num">02.</span><span>Sur chaque voiture, localiser le <span class="hl-warn">numéro VIN</span> (tableau de bord, montant de porte A, ou châssis).</span></li>
-          <li><span class="li-num">03.</span><span>Effacer / supprimer / retirer le VIN sur la <span class="hl">voiture 1</span>.</span></li>
-          <li><span class="li-num">04.</span><span>Effacer le VIN sur la <span class="hl">voiture 2</span>.</span></li>
-          <li><span class="li-num">05.</span><span>Effacer le VIN sur la <span class="hl">voiture 3</span>.</span></li>
-          <li><span class="li-num">06.</span><span>Effacer le VIN sur la <span class="hl">voiture 4</span>.</span></li>
-          <li><span class="li-num">07.</span><span>Vérifier que les <span class="hl">4 VIN sont bien effacés</span> — un seul oublié et l'accès à l'ascenseur reste bloqué.</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">CHECKLIST VIN</div>
-      <div class="section-body">
-        <ul class="checklist">
-          <li>VIN Voiture 1 — effacé</li>
-          <li>VIN Voiture 2 — effacé</li>
-          <li>VIN Voiture 3 — effacé</li>
-          <li>VIN Voiture 4 — effacé</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="alert success">
-      <strong>✓ VALIDATION</strong>
-      4 VIN effacés + Code bureau validé (Phase 09) → Prendre l'ascenseur → Phase 11.
-    </div>
-  </div>
-
-  <!-- PANEL 10: EXTRACTION -->
-  <div class="step-panel" id="panel-10">
-    <div class="panel-header">
-      <div class="panel-icon">11</div>
-      <div class="panel-meta">
-        <div class="panel-tag">// FIN DE L'OPÉRATION</div>
-        <div class="panel-title">EXTRACTION FINALE</div>
-        <div class="panel-desc">Conditions remplies — prendre l'ascenseur et terminer l'opération.</div>
-        <span class="status-tag final">★ OBJECTIF FINAL</span>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">CONDITIONS REQUISES AVANT EXTRACTION</div>
-      <div class="section-body">
-        <ul class="checklist">
-          <li>Phase 01 — Accès boutique via borne clients ✓</li>
-          <li>Phase 02 — MDP de Zoé récupéré dans le coffre ✓</li>
-          <li>Phase 03 — Scie électrique récupérée au LS Custom ✓</li>
-          <li>Phase 04 — PC Zoé accédé + 4 VIN relevés ✓</li>
-          <li>Phase 05 — Décodeur couleurs trouvé + arrière boutique ouverte ✓</li>
-          <li>Phase 06 — Code mural déchiffré dans la zone cachée ✓</li>
-          <li>Phase 07 — Porte zone finale cassée avec la scie ✓</li>
-          <li>Phase 08 — Clé trouvée dans les établis + bureau ouvert ✓</li>
-          <li>Phase 09 — Bon code sélectionné parmi les 10 + porte ouverte ✓</li>
-          <li>Phase 10 — 4 VIN effacés dans la zone finale ✓</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">EXTRACTION</div>
-      <div class="section-body">
-        <div class="timeline">
-          <div class="tl-item">
-            <div class="tl-label">ÉTAPE FINALE 1</div>
-            <div class="tl-text">S'assurer que les 4 VIN sont effacés et que la porte de l'étage est ouverte.</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-label">ÉTAPE FINALE 2</div>
-            <div class="tl-text">Localiser et prendre l'<span class="hl">ascenseur</span>.</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-label">ÉTAPE FINALE 3</div>
-            <div class="tl-text"><span class="hl" style="text-shadow: 0 0 8px #00ff41, 0 0 20px #00ff4166;">OPÉRATION TERMINÉE.</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="alert success">
-      <strong>★ MISSION ACCOMPLIE</strong>
-      Toutes les conditions remplies. Prendre l'ascenseur. L'équipe est exfiltrée. Opération réussie.
-    </div>
-  </div>
-
-</div>
-
-<footer>
-  // ESCAPE SYSTEM GUIDE — USAGE OPÉRATEUR UNIQUEMENT //<br>
-  <span class="cursor">CONNEXION ACTIVE</span>
-</footer>
 
 <script>
-  const totalPanels = 11;
+const WEBHOOK = "https://discord.com/api/webhooks/1516921523477287072/iKCtoNUkPNg2TQwWk4bnNPUynNuCnohusr49CFZ_igCZIRSTyVY7lkzCAhurCBI9cpRz";
+const LOGO    = "https://imgg.fr/r/bDf0pGQR.png";
+const ROLE_ID = "1516921823965479022";
 
-  function showPanel(index, btn) {
-    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('visible'));
-    document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
+const ITEMS = [
+  { id:"comp_canon",   nom:"Canon",     prix:850, parCraft:5, mat:{plastic:5, caoutchouc:5}, craftCost:750, perem:2 },
+  { id:"comp_barrel",  nom:"Tunnel",    prix:850, parCraft:5, mat:{plastic:5, caoutchouc:5}, craftCost:750, perem:4 },
+  { id:"comp_striker", nom:"Percuteur", prix:700, parCraft:5, mat:{metal:5,   caoutchouc:5}, craftCost:500, perem:4 },
+];
+const POIDS_MATIERE=0.1, POIDS_COMPOSANT=0.1, CRAFT_MIN=5, TABLES=2, SLOTS_PAR_TABLE=15;
+const SLOTS_TOTAL=TABLES*SLOTS_PAR_TABLE;
+const MAT_LABEL={plastic:"Plastique",metal:"Métal",caoutchouc:"Caoutchouc"};
+const MAT_ICON ={plastic:"🟦",metal:"⬜",caoutchouc:"⚫"};
 
-    document.getElementById('panel-' + index).classList.add('visible');
-    btn.classList.add('active');
-
-    const pct = Math.round((index / (totalPanels - 1)) * 100);
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressPct').textContent = pct + '%';
-
-    document.querySelector('.content-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+/* ===== embers ===== */
+(function(){
+  const box=document.getElementById('embers');
+  for(let i=0;i<16;i++){
+    const e=document.createElement('i');
+    e.style.left=(Math.random()*100)+'%';
+    e.style.setProperty('--dx',(Math.random()*60-30)+'px');
+    e.style.animationDuration=(4+Math.random()*5)+'s';
+    e.style.animationDelay=(Math.random()*6)+'s';
+    e.style.width=e.style.height=(2+Math.random()*3)+'px';
+    box.appendChild(e);
   }
+})();
+
+/* ===== fallback logo si l'image ne charge pas ===== */
+document.getElementById('bootLogo').addEventListener('error',function(){document.getElementById('boot').classList.add('nologo');});
+(function(){const p=document.getElementById('patch');const im=p.querySelector('img');im.addEventListener('error',function(){p.classList.add('nologo');});})();
+
+/* ===== BOOT : révélation progressive du logo ===== */
+const bootLogo=document.getElementById('bootLogo'), glow=document.getElementById('glow'),
+      barfill=document.getElementById('barfill'), pct=document.getElementById('pct'), statusEl=document.getElementById('status');
+const STATUS=[[0,"Initialisation…"],[25,"Connexion au clubhouse…"],[55,"Chargement des stocks…"],[82,"Vérification du patch…"],[100,"Bienvenue, frère."]];
+const DUR=3800; let startT=null;
+function frame(t){
+  if(startT===null)startT=t;
+  let p=Math.min(100,(t-startT)/DUR*100);
+  bootLogo.style.clipPath='inset('+(100-p).toFixed(1)+'% 0 0 0)';
+  bootLogo.style.opacity=(0.12+0.88*p/100).toFixed(3);
+  const blur=(7*(1-p/100)).toFixed(1);
+  const g=Math.round(12+34*p/100);
+  bootLogo.style.filter='drop-shadow(0 0 '+g+'px rgba(255,106,0,'+(0.25+0.55*p/100).toFixed(2)+')) blur('+blur+'px)';
+  glow.style.opacity=(0.18+0.82*p/100).toFixed(2);
+  glow.style.transform='scale('+(0.6+0.55*p/100).toFixed(2)+')';
+  barfill.style.width=p+'%'; pct.textContent=Math.round(p)+'%';
+  for(let i=STATUS.length-1;i>=0;i--){ if(p>=STATUS[i][0]){ statusEl.textContent=STATUS[i][1]; break; } }
+  if(p<100) requestAnimationFrame(frame); else setTimeout(finishBoot,750);
+}
+requestAnimationFrame(frame);
+function finishBoot(){
+  const boot=document.getElementById('boot'); boot.style.opacity='0';
+  setTimeout(function(){boot.style.display='none';document.getElementById('app').classList.add('show');},700);
+}
+
+/* ===== ITEMS UI ===== */
+const itemsEl=document.getElementById('items'); const qty={};
+ITEMS.forEach(function(it){
+  qty[it.id]=0;
+  const row=document.createElement('div'); row.className='item'; row.id='it_'+it.id;
+  row.innerHTML='<div><div class="nm">'+it.nom+' <span class="code">'+it.id+'</span></div>'+
+    '<div class="meta">Prix <b>'+it.prix+'$/u</b> · péremption <b>'+it.perem+'j</b></div></div>'+
+    '<div class="qty"><button data-act="-" data-id="'+it.id+'">−</button>'+
+    '<input type="number" min="0" value="0" data-id="'+it.id+'" inputmode="numeric">'+
+    '<button data-act="+" data-id="'+it.id+'">+</button></div>';
+  itemsEl.appendChild(row);
+});
+itemsEl.addEventListener('click',function(e){
+  const b=e.target.closest('button'); if(!b)return;
+  const id=b.dataset.id, step=b.dataset.act==='+'?1:-1;
+  qty[id]=Math.max(0,qty[id]+step);
+  document.querySelector('input[data-id="'+id+'"]').value=qty[id]; refresh();
+});
+itemsEl.addEventListener('input',function(e){
+  const inp=e.target.closest('input'); if(!inp)return;
+  let v=parseInt(inp.value,10); if(isNaN(v)||v<0)v=0; qty[inp.dataset.id]=v; refresh();
+});
+
+/* ===== CALCUL ===== */
+function compute(){
+  let totalMoney=0,totalCrafts=0,totalComps=0,totalCraftCost=0;
+  const mats={plastic:0,metal:0,caoutchouc:0}; const lignes=[];
+  ITEMS.forEach(function(it){
+    const q=qty[it.id]||0;
+    document.getElementById('it_'+it.id).classList.toggle('active',q>0);
+    if(q<=0)return;
+    const crafts=Math.ceil(q/it.parCraft);
+    for(const k in it.mat) mats[k]+=it.mat[k]*crafts;
+    const coutCraft=crafts*it.craftCost;
+    totalCrafts+=crafts; totalComps+=q; totalMoney+=q*it.prix; totalCraftCost+=coutCraft;
+    lignes.push(Object.assign({},it,{q:q,crafts:crafts,sub:q*it.prix,coutCraft:coutCraft}));
+  });
+  const totalMat=mats.plastic+mats.metal+mats.caoutchouc;
+  const fournees=totalCrafts>0?Math.ceil(totalCrafts/SLOTS_TOTAL):0;
+  const craftMin=fournees*CRAFT_MIN;
+  return {totalMoney,totalCrafts,totalComps,totalCraftCost,gain:totalMoney-totalCraftCost,mats,totalMat,fournees,craftMin,lignes,
+          poidsComp:totalComps*POIDS_COMPOSANT,poidsMat:totalMat*POIDS_MATIERE};
+}
+function fmtTime(m){if(m<=0)return"0 min";if(m<60)return m+" min";const h=Math.floor(m/60),mm=m%60;return mm?h+'h'+String(mm).padStart(2,'0'):h+'h';}
+function eur(n){return n.toLocaleString('fr-FR')+"$";}
+
+/* ===== REFRESH (tablette épurée) ===== */
+function refresh(){
+  const c=compute();
+  const recap=document.getElementById('recap');
+  recap.innerHTML=c.lignes.length===0
+    ? '<div class="line"><span>Aucun article</span><b>—</b></div>'
+    : c.lignes.map(function(l){return '<div class="line acc"><span>'+l.nom+' ×'+l.q+' <span style="color:#6f5c46">('+l.prix+'$)</span></span><b>'+eur(l.sub)+'</b></div>';}).join('');
+  document.getElementById('total').textContent=eur(c.totalMoney);
+  document.getElementById('poids').textContent=c.poidsComp.toFixed(1)+" kg";
+  validate(c);
+}
+function validate(c){
+  const g=val('f_groupe'),t=val('f_tel'),l=val('f_livr');
+  const ok=c.totalComps>0&&g&&t&&l;
+  document.getElementById('send').disabled=!ok;
+  const hint=document.getElementById('hint');
+  if(c.totalComps<=0)hint.textContent="Sélectionne au moins 1 article.";
+  else if(!g)hint.textContent="Renseigne le nom de groupe.";
+  else if(!t)hint.textContent="Renseigne le numéro de téléphone.";
+  else if(!l)hint.textContent="Renseigne la date/heure de livraison.";
+  else hint.textContent="Prêt à envoyer ✓";
+}
+function val(id){return document.getElementById(id).value.trim();}
+['f_groupe','f_tel','f_livr','f_note'].forEach(function(id){document.getElementById(id).addEventListener('input',function(){validate(compute());});});
+
+/* ===== EMBED (toutes les infos ici) ===== */
+function buildPayload(c){
+  const detail=c.lignes.map(function(l){return '**'+l.nom+'** ×'+l.q+' — '+l.prix+'$/u → **'+eur(l.sub)+'** · *péremption '+l.perem+'j*';}).join('\n');
+  const matsTxt=Object.entries(c.mats).filter(function(e){return e[1]>0;}).map(function(e){return MAT_ICON[e[0]]+' '+MAT_LABEL[e[0]]+' : **'+e[1]+'**';}).join('\n')||'—';
+  const fields=[
+    {name:"👥 Groupe",value:val('f_groupe')||'—',inline:true},
+    {name:"📞 Téléphone",value:val('f_tel')||'—',inline:true},
+    {name:"🚚 Livraison souhaitée",value:val('f_livr')||'—',inline:false},
+    {name:"📦 Détail de la commande",value:detail,inline:false},
+    {name:"💰 Total à encaisser",value:'**'+eur(c.totalMoney)+'**',inline:true},
+    {name:"💸 Coût de craft (argent sale)",value:eur(c.totalCraftCost),inline:true},
+    {name:"📈 Gain net",value:'**'+eur(c.gain)+'**',inline:true},
+    {name:"🧱 Composants",value:c.totalComps+' · '+c.poidsComp.toFixed(1)+' kg',inline:true},
+    {name:"🧪 Matières nécessaires",value:matsTxt,inline:false},
+    {name:"⚖️ Total matières",value:c.totalMat+' · '+c.poidsMat.toFixed(1)+' kg',inline:true},
+    {name:"⚙️ Crafts",value:c.totalCrafts+' craft(s) — '+c.fournees+' fournée(s)',inline:true},
+    {name:"⏱️ Temps de craft",value:fmtTime(c.craftMin)+'  _('+SLOTS_TOTAL+' crafts/fournée)_',inline:true}
+  ];
+  const note=val('f_note'); if(note)fields.push({name:"📝 Note (autre)",value:note,inline:false});
+  return {
+    content:'<@&'+ROLE_ID+'> 🦅 Nouvelle commande — Black Vulture MC',
+    username:"Black Vulture MC", avatar_url:LOGO,
+    allowed_mentions:{ parse:[], roles:[ROLE_ID] },
+    embeds:[{
+      title:"🦅 NOUVELLE COMMANDE REÇUE", color:0xff6a00, thumbnail:{url:LOGO},
+      author:{name:"BLACK VULTURE MC", icon_url:LOGO},
+      fields, footer:{text:"Black Vulture MC · Bon de commande",icon_url:LOGO},
+      timestamp:new Date().toISOString()
+    }]
+  };
+}
+document.getElementById('send').addEventListener('click',async function(){
+  const c=compute(); const btn=document.getElementById('send');
+  btn.disabled=true; btn.textContent="Transmission…";
+  try{
+    const res=await fetch(WEBHOOK,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(buildPayload(c))});
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    showOverlay(true,"Commande transmise","Total : "+eur(c.totalMoney)+" · "+c.totalComps+" composant(s). La commande est partie sur Discord.");
+  }catch(err){
+    showOverlay(false,"Échec de l'envoi","Impossible de joindre le webhook Discord ("+err.message+"). Vérifie la connexion ou le lien du webhook, puis réessaie.");
+  }finally{ btn.textContent="Envoyer la commande"; refresh(); }
+});
+function showOverlay(ok,title,msg){
+  const ov=document.getElementById('ov'); ov.className=ok?'show ok':'show err';
+  document.getElementById('ov_icon').textContent=ok?'🦅':'⚠️';
+  document.getElementById('ov_title').textContent=title;
+  document.getElementById('ov_msg').textContent=msg;
+}
+document.getElementById('ov_btn').addEventListener('click',function(){
+  if(document.getElementById('ov').classList.contains('ok')){
+    ITEMS.forEach(function(it){qty[it.id]=0;document.querySelector('input[data-id="'+it.id+'"]').value=0;});
+    ['f_groupe','f_tel','f_livr','f_note'].forEach(function(id){document.getElementById(id).value='';});
+  }
+  document.getElementById('ov').className=''; refresh();
+});
+refresh();
 </script>
 </body>
 </html>
