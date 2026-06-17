@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>BLACK VULTURE MC — Bon de commande</title>
+<title>BLACK VULTURES MC — Bon de commande</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -160,10 +160,10 @@ body{
     <div class="console" id="console"></div>
     <div class="granted" id="granted">
       <div class="g1">ACCESS GRANTED</div>
-      <div class="g2">BLACK VULTURE MC</div>
+      <div class="g2">BLACK VULTURES MC</div>
     </div>
     <div class="hud">
-      <span class="tag">BLACK_VULTURE//INTRUSION</span>
+      <span class="tag">BLACK_VULTURES//INTRUSION</span>
       <div class="bar"><i id="barfill"></i></div>
       <span class="cnt" id="cnt">0000 lignes</span>
       <span class="pct" id="pct">0%</span>
@@ -178,7 +178,7 @@ body{
         <svg class="fb" width="46" height="46" viewBox="0 0 200 200"><g fill="none" stroke="#ff6a00" stroke-width="6" stroke-linejoin="round"><path d="M100 70 C60 40 24 52 18 70 C40 66 56 74 70 90 C50 96 40 110 42 128 C58 112 78 110 96 120 L100 150 L104 120 C122 110 142 112 158 128 C160 110 150 96 130 90 C144 74 160 66 182 70 C176 52 140 40 100 70 Z"/></g></svg>
       </div>
       <div>
-        <div class="club-sm">BLACK <b>VULTURE</b></div>
+        <div class="club-sm">BLACK <b>VULTURES</b></div>
         <div class="sub">MC · Bon de commande</div>
       </div>
       <div class="badge"><span class="dot"></span>Clubhouse en ligne</div>
@@ -230,9 +230,9 @@ const LOGO    = "https://imgg.fr/r/bDf0pGQR.png";
 const ROLE_ID = "1516921823965479022";
 
 const ITEMS = [
-  { id:"comp_canon",   nom:"Canon",     prix:850, parCraft:5, mat:{plastic:5, caoutchouc:5}, craftCost:750, perem:2 },
-  { id:"comp_barrel",  nom:"Tunnel",    prix:850, parCraft:5, mat:{plastic:5, caoutchouc:5}, craftCost:750, perem:4 },
-  { id:"comp_striker", nom:"Percuteur", prix:700, parCraft:5, mat:{metal:5,   caoutchouc:5}, craftCost:500, perem:4 },
+  { id:"comp_canon",   nom:"Canon",     prix:850, batch:5, mat:{plastic:1, caoutchouc:1}, craftCost:150, perem:2 },
+  { id:"comp_barrel",  nom:"Tunnel",    prix:850, batch:5, mat:{plastic:1, caoutchouc:1}, craftCost:150, perem:4 },
+  { id:"comp_striker", nom:"Percuteur", prix:700, batch:5, mat:{metal:1,   caoutchouc:1}, craftCost:100, perem:4 },
 ];
 const POIDS_MATIERE=0.1, POIDS_COMPOSANT=0.1, CRAFT_MIN=5, TABLES=2, SLOTS_PAR_TABLE=15;
 const SLOTS_TOTAL=TABLES*SLOTS_PAR_TABLE;
@@ -258,8 +258,8 @@ const MAT_ICON ={plastic:"🟦",metal:"⬜",caoutchouc:"⚫"};
     "[dns] resolve clubhouse.lan","[arp] spoof gateway "+ip(),"pkt 0x"+hex(4)+" forwarded","route +"+ip()+"/24"];
   const STAT=["firewall rule bypassed","auth token forged","privilege escalated -> root","payload delivered",
     "hash cracked ("+hex(8)+")","tunnel established","keylogger armed","db dump 0x"+hex(4)+" complete"];
-  const VULT=["[BLACK VULTURE] breaching perimeter…","[BLACK VULTURE] no witnesses.","[BLACK VULTURE] we run this city.",
-    "[BLACK VULTURE] decrypting member roster…","[BLACK VULTURE] wiping logs…"];
+  const VULT=["[BLACK VULTURES] breaching perimeter…","[BLACK VULTURES] no witnesses.","[BLACK VULTURES] we run this city.",
+    "[BLACK VULTURES] decrypting member roster…","[BLACK VULTURES] wiping logs…"];
   const DIM=["0x"+hex(8)+":  "+hex(2)+" "+hex(2)+" "+hex(2)+" "+hex(2)+"  "+hex(2)+" "+hex(2)+" "+hex(2)+" "+hex(2),
     "....","loading module "+hex(4),"chk "+hex(16),"buf@0x"+hex(6)+" -> 0x"+hex(6)];
   const MILES={5:"[ 05% ] reconnaissance…",25:"[ 25% ] firewall contourné",50:"[ 50% ] accès base de données",
@@ -267,7 +267,7 @@ const MAT_ICON ={plastic:"🟦",metal:"⬜",caoutchouc:"⚫"};
 
   function makeLine(){
     const r=Math.random();
-    if(r<0.12) return {t:"root@blackvulture:~# "+pick(CMDS)};
+    if(r<0.12) return {t:"root@blackvultures:~# "+pick(CMDS)};
     if(r<0.30) return {t:"0x"+hex(8)+":  "+hex(2)+" "+hex(2)+" "+hex(2)+" "+hex(2)+"  "+hex(2)+" "+hex(2)+" "+hex(2)+" "+hex(2),c:"dim"};
     if(r<0.48) return {t:"  "+pick(ASM),c:"dim"};
     if(r<0.64) return {t:pick(NET)};
@@ -297,7 +297,7 @@ const MAT_ICON ={plastic:"🟦",metal:"⬜",caoutchouc:"⚫"};
   }
   function finish(){
     done=true; barfill.style.width='100%'; pct.textContent='100%';
-    add({t:"root@blackvulture:~# access granted_",c:'ok'});
+    add({t:"root@blackvultures:~# access granted_",c:'ok'});
     setTimeout(function(){
       document.getElementById('granted').classList.add('show');
       setTimeout(function(){
@@ -343,9 +343,9 @@ function compute(){
     const q=qty[it.id]||0;
     document.getElementById('it_'+it.id).classList.toggle('active',q>0);
     if(q<=0)return;
-    const crafts=Math.ceil(q/it.parCraft);
-    for(const k in it.mat) mats[k]+=it.mat[k]*crafts;
-    const coutCraft=crafts*it.craftCost;
+    const crafts=Math.ceil(q/it.batch);          // jobs de craft (5 max) pour le temps
+    for(const k in it.mat) mats[k]+=it.mat[k]*q;  // 1 matière par composant
+    const coutCraft=it.craftCost*q;               // coût par composant (150$/100$)
     totalCrafts+=crafts; totalComps+=q; totalMoney+=q*it.prix; totalCraftCost+=coutCraft;
     lignes.push(Object.assign({},it,{q:q,crafts:crafts,sub:q*it.prix,coutCraft:coutCraft}));
   });
@@ -403,13 +403,13 @@ function buildPayload(c){
   ];
   const note=val('f_note'); if(note)fields.push({name:"📝 Note (autre)",value:note,inline:false});
   return {
-    content:'<@&'+ROLE_ID+'> 🦅 Nouvelle commande — Black Vulture MC',
-    username:"Black Vulture MC", avatar_url:LOGO,
+    content:'<@&'+ROLE_ID+'> 🦅 Nouvelle commande — Black Vultures MC',
+    username:"Black Vultures MC", avatar_url:LOGO,
     allowed_mentions:{ parse:[], roles:[ROLE_ID] },
     embeds:[{
       title:"🦅 NOUVELLE COMMANDE REÇUE", color:0xff6a00, thumbnail:{url:LOGO},
-      author:{name:"BLACK VULTURE MC", icon_url:LOGO},
-      fields, footer:{text:"Black Vulture MC · Bon de commande",icon_url:LOGO},
+      author:{name:"BLACK VULTURES MC", icon_url:LOGO},
+      fields, footer:{text:"Black Vultures MC · Bon de commande",icon_url:LOGO},
       timestamp:new Date().toISOString()
     }]
   };
